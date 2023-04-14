@@ -14,9 +14,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/users")
-    public UserWithoutPassDTO register(@RequestBody UserRegisterDataDTO registerData){
-        return userService.register(registerData);
-    }
+//    @PostMapping("/users")
+//    public UserWithoutPassDTO register(@RequestBody UserRegisterDataDTO registerData){
+//        return userService.register(registerData);
+//    }
 
 }
