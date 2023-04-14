@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.DTOs.LoginDTO;
 import com.example.demo.model.DTOs.UserRegisterDataDTO;
 import com.example.demo.model.DTOs.UserWithoutPassDTO;
 import com.example.demo.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,14 @@ public class UserController extends AbstractController{
     @GetMapping("users/verify")
     public UserWithoutPassDTO verify(@RequestParam("code") String code){
         return userService.verify(code);
+    }
+
+    @PostMapping("/users/login")
+    public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s){
+        UserWithoutPassDTO respDto = userService.login(dto);
+        s.setAttribute("LOGGED", true);
+        s.setAttribute("LOGGED_ID", respDto.getId());
+        return respDto;
     }
 
 }

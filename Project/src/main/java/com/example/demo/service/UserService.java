@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.model.DTOs.LoginDTO;
 import com.example.demo.model.DTOs.UserRegisterDataDTO;
 import com.example.demo.model.DTOs.UserWithoutPassDTO;
 import com.example.demo.model.entities.User;
@@ -35,9 +36,9 @@ public class UserService {
         if (!registerData.getFullName().matches("^[A-Z][a-z]+(\\s[A-Z][a-z]+)?$")){
             throw new BadRequestException("Invalid full name!");
         }
-//        if (userRepository.existsByEmail(registerData.getEmail())){
-//            throw new BadRequestException("Email already exists!");
-//        }
+        if (userRepository.existsByEmail(registerData.getEmail())){
+            throw new BadRequestException("Email already exists!");
+        }
         if (!registerData.getEmail().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")){
             throw new BadRequestException("Invalid email!");
         }
@@ -65,6 +66,20 @@ public class UserService {
         userRepository.save(u);
         return mapper.map(u,UserWithoutPassDTO.class);
     }
+    public UserWithoutPassDTO login(LoginDTO dto) {
+        Optional<User> opt = userRepository.getByEmail(dto.getEmail());
+
+        if (!opt.isPresent()){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        if(!passwordEncoder.matches(dto.getPassword(), opt.get().getPassword())){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        if (!opt.get().isVerified()){
+            throw new UnauthorizedException("Wrong credentials");
+        }
+        return mapper.map(opt, UserWithoutPassDTO.class);
+    }
 
 
 
@@ -73,12 +88,8 @@ public class UserService {
         message.setTo(to);
         message.setSubject("Account Verification");
         message.setText("Your verification code is: " + code);
-        try{
-            mailSender.send(message);
-        }
-        catch (MailException e){
-            e.printStackTrace();
-        }
+        mailSender.send(message);
+
 
     }
 }
