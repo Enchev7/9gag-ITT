@@ -27,5 +27,9 @@ public class User {
     private String password;
     @Column
     private int age;
+    @Column(name = "ver_code")
+    private String verCode;
+    @Column(name = "is_verified")
+    private boolean isVerified;
 
 }
