@@ -9,6 +9,7 @@ import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -80,7 +81,6 @@ public class UserService {
         }
         return mapper.map(opt, UserWithoutPassDTO.class);
     }
-
 
 
     private void sendVerificationCode(String to, String code) {
