@@ -13,6 +13,5 @@ public class PostDTO {
     
     private String title;
     private String filePath;
-    private UserWithoutPassDTO owner;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

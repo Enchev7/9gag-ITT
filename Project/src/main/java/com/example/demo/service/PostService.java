@@ -2,6 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.DTOs.PostInfoDTO;
+import com.example.demo.model.entities.Post;
+import com.example.demo.model.entities.User;
+import com.example.demo.model.exceptions.NotFoundException;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -21,6 +24,12 @@ public class PostService {
     private UserRepository userRepository;
     
     public PostInfoDTO create(PostDTO dto, Integer userId){
-        return null;
+        //TODO
+        //validate post info
+        User u = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Post post = mapper.map(dto, Post.class);
+        post.setOwner(u);
+        postRepository.save(post);
+        return mapper.map(post, PostInfoDTO.class);
     }
 }
