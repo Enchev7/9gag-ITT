@@ -1,6 +1,6 @@
 package com.example.demo.model.DTOs;
 
-public class UserWithoutPassDTO {
+public class UserWithoutPassDTO extends AbstractDTO {
 
     private int id;
     private String email;
