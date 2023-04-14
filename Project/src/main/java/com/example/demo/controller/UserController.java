@@ -29,5 +29,6 @@ public class UserController extends AbstractController{
         s.setAttribute("LOGGED_ID", respDto.getId());
         return respDto;
     }
+    //@GetMapping
 
 }
