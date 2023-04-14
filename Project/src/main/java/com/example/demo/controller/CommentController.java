@@ -1,4 +1,7 @@
 package com.example.demo.controller;
 
-public class CommentController {
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class CommentController extends AbstractController{
 }
