@@ -1,13 +1,14 @@
 package com.example.demo.model.DTOs;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ErrorDTO extends AbstractDTO{
+public class ErrorDTO {
 
     private String msg;
     private int status;

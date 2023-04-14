@@ -1,7 +1,15 @@
 package com.example.demo.model.DTOs;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public class UserRegisterDataDTO extends AbstractDTO {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserRegisterDataDTO {
 
     private String fullName;
     private String email;
