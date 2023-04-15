@@ -7,6 +7,7 @@ import com.example.demo.model.entities.Post;
 import com.example.demo.model.entities.User;
 import com.example.demo.model.exceptions.BadRequestException;
 import com.example.demo.model.exceptions.NotFoundException;
+import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.CommentRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
@@ -53,7 +54,6 @@ public class CommentService {
                 throw new NotFoundException("The comment you try to reply to is missing.");
             }
         }
-
         Optional<User> optionalUser = userRepository.findById(userId);
 
         try{
@@ -83,5 +83,17 @@ public class CommentService {
             e.printStackTrace();
             throw new BadRequestException(e.getMessage());
         }
+    }
+    public CommentDTO delete(int id,int userId){
+
+        Optional<Comment> optionalComment = commentRepository.findById(id);
+        if (optionalComment.isEmpty()){
+            throw new NotFoundException("Comment not found!");
+        }
+        if (optionalComment.get().getOwner().getId()!=userId){
+            throw new UnauthorizedException("Can't delete a comment you haven't created yourself!");
+        }
+        commentRepository.delete(optionalComment.get());
+        return mapper.map(optionalComment.get(),CommentDTO.class);
     }
 }

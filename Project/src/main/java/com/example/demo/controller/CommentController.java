@@ -25,4 +25,13 @@ public class CommentController extends AbstractController{
         }
         return commentService.create(postId,file,content,parentId,userId);
     }
+    @DeleteMapping("/comments/{id}")
+    public CommentDTO delete(@PathVariable int id,HttpSession s){
+
+        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
+        if (userId == null){
+            throw new UnauthorizedException("Log in first.");
+        }
+        return commentService.delete(id,userId);
+    }
 }
