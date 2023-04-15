@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,5 +33,9 @@ public class User {
     private String verCode;
     @Column(name = "is_verified")
     private boolean isVerified;
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Set<Post> posts=new HashSet<>();
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Comment> comments=new HashSet<>();
 
 }

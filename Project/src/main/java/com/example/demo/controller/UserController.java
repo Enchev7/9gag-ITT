@@ -3,7 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.DTOs.LoginDTO;
 import com.example.demo.model.DTOs.UserRegisterDataDTO;
 import com.example.demo.model.DTOs.UserWithoutPassDTO;
-import com.example.demo.model.entities.User;
+import com.example.demo.model.exceptions.BadRequestException;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +27,12 @@ public class UserController extends AbstractController{
 
     @PostMapping("/users/login")
     public UserWithoutPassDTO login(@RequestBody LoginDTO dto, HttpSession s){
+
+        Boolean isLoggedIn = (Boolean) s.getAttribute("LOGGED");
+        if (isLoggedIn != null && isLoggedIn) {
+
+            throw new BadRequestException("Already logged in.");
+        }
         UserWithoutPassDTO respDto = userService.login(dto);
         s.setAttribute("LOGGED", true);
         s.setAttribute("LOGGED_ID", respDto.getId());

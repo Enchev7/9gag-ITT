@@ -9,8 +9,6 @@ import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -54,7 +52,7 @@ public class UserService {
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         u.setVerCode(verCode);
         userRepository.save(u);
-        //sendVerificationCode(registerData.getEmail(),verCode);
+        sendVerificationCode(registerData.getEmail(),verCode);
         return mapper.map(u,UserWithoutPassDTO.class);
     }
     public UserWithoutPassDTO verify(String code){
@@ -79,7 +77,10 @@ public class UserService {
         if (!opt.get().isVerified()){
             throw new UnauthorizedException("Wrong credentials");
         }
-        return mapper.map(opt, UserWithoutPassDTO.class);
+        User u = opt.get();
+        u.setLastLoginTime(LocalDateTime.now());
+        userRepository.save(u);
+        return mapper.map(u, UserWithoutPassDTO.class);
     }
 
 
@@ -89,7 +90,5 @@ public class UserService {
         message.setSubject("Account Verification");
         message.setText("Your verification code is: " + code);
         mailSender.send(message);
-
-
     }
 }

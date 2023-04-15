@@ -38,6 +38,7 @@ public abstract class AbstractController {
     }
 
     private ErrorDTO generateErrorDTO(Exception e, HttpStatus s){
+        //printStackTrace();
         return ErrorDTO.builder()
                 .msg(e.getMessage())
                 .time(LocalDateTime.now())
