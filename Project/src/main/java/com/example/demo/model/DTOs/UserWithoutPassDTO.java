@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,5 +18,11 @@ public class UserWithoutPassDTO {
     private String email;
     private int age;
     private boolean isVerified;
+//    private List<PostBasicInfoDTO> posts;
+//    private List<CommentBasicInfoDTO> comments;
+   //private List<CommentReactionDTO> commentsReactions;
+
+
+
 
 }

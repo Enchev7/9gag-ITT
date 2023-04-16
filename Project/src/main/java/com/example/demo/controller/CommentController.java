@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.DTOs.CommentDTO;
+import com.example.demo.model.DTOs.CommentReactionDTO;
 import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.service.CommentService;
 import jakarta.servlet.http.HttpSession;
@@ -33,5 +34,14 @@ public class CommentController extends AbstractController{
             throw new UnauthorizedException("Log in first.");
         }
         return commentService.delete(id,userId);
+    }
+
+    @PutMapping("/comments/{id}/like_unlike")
+    public CommentReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
+        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
+        if (userId == null){
+            throw new UnauthorizedException("Log in first.");
+        }
+        return commentService.likeUnlike(id,userId);
     }
 }

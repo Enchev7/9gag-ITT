@@ -2,12 +2,12 @@ package com.example.demo.service;
 
 
 import com.example.demo.model.DTOs.CommentDTO;
-import com.example.demo.model.entities.Comment;
-import com.example.demo.model.entities.Post;
-import com.example.demo.model.entities.User;
+import com.example.demo.model.DTOs.CommentReactionDTO;
+import com.example.demo.model.entities.*;
 import com.example.demo.model.exceptions.BadRequestException;
 import com.example.demo.model.exceptions.NotFoundException;
 import com.example.demo.model.exceptions.UnauthorizedException;
+import com.example.demo.model.repositories.CommentReactionRepository;
 import com.example.demo.model.repositories.CommentRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
@@ -28,6 +28,8 @@ import java.util.UUID;
 public class CommentService {
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private CommentReactionRepository commentReactionRepository;
     @Autowired
     private PostRepository postRepository;
     @Autowired
@@ -95,5 +97,27 @@ public class CommentService {
         }
         commentRepository.delete(optionalComment.get());
         return mapper.map(optionalComment.get(),CommentDTO.class);
+    }
+    public CommentReactionDTO likeUnlike(int id, int userId){
+        Optional<Comment> optionalComment = commentRepository.findById(id);
+        if (optionalComment.isEmpty()){
+            throw new NotFoundException("The comment you are trying to react to is missing.");
+        }
+        Optional<CommentReaction> optionalCommentReaction = commentReactionRepository.findByIdCommentIdAndIdUserId(id,userId);
+
+        CommentReaction commentReaction;
+        if (optionalCommentReaction.isPresent()){
+            commentReaction=optionalCommentReaction.get();
+            commentReaction.setLiked(!commentReaction.isLiked());
+        }
+        else {
+            commentReaction=new CommentReaction();
+            commentReaction.setId(new CommentReaction.CommentReactionId(userId, id));
+            commentReaction.setUser(userRepository.findById(userId).get());
+            commentReaction.setComment(optionalComment.get());
+            commentReaction.setLiked(true);
+        }
+        commentReactionRepository.save(commentReaction);
+        return mapper.map(commentReaction,CommentReactionDTO.class);
     }
 }

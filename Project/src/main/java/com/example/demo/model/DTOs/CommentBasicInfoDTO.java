@@ -12,13 +12,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO {
+public class CommentBasicInfoDTO {
 
     private int id;
     private UserWithoutPassDTO owner;
     private PostBasicInfoDTO post;
-    private CommentBasicInfoDTO parent;
-    private List<CommentReactionDTO> reactions;
     private String filePath;
     private LocalDateTime createdAt;
     private String content;

@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
 @Getter
@@ -37,6 +36,9 @@ public class Comment {
     @Column
     private String content;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private Set<Comment> childComments=new HashSet<>();
+    private List<Comment> replies =new ArrayList<>();
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private List<CommentReaction> commentReactions = new ArrayList<>();
+
 
 }
