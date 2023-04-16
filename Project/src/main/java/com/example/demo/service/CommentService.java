@@ -61,7 +61,7 @@ public class CommentService {
         try{
             String ext = FilenameUtils.getExtension(file.getOriginalFilename());
             String name = UUID.randomUUID() + "."+ext;
-            File dir = new File("C:\\Encho\\ITT\\uploads");
+            File dir = new File("uploads");
             if(!dir.exists()){
                 dir.mkdirs();
             }

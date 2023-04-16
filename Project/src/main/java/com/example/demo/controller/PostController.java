@@ -19,24 +19,15 @@ public class PostController extends AbstractController{
     @SneakyThrows
     @PostMapping("/posts")
     public PostBasicInfoDTO create(@RequestBody PostDTO dto, HttpSession s){
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
         return postService.create(dto, getLoggedId(s));
     }
     @PutMapping("/posts/{id}/like_unlike")
     public PostReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return postService.likeUnlike(id,userId);
+        return postService.likeUnlike(id,getLoggedId(s));
     }
     @PutMapping("/posts/{id}/dislike_undislike")
     public PostReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return postService.dislikeUnDislike(id,userId);
+        return postService.dislikeUnDislike(id,getLoggedId(s));
     }
     
 }

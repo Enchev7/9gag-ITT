@@ -19,37 +19,19 @@ public class CommentController extends AbstractController{
     public CommentDTO create(@PathVariable int postId, @RequestParam("file")MultipartFile file,
                              @RequestParam("content")String content, @RequestParam("parentId")String parentId,
                              HttpSession s){
-
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return commentService.create(postId,file,content,parentId,userId);
+        return commentService.create(postId,file,content,parentId,getLoggedId(s));
     }
     @DeleteMapping("/comments/{id}")
     public CommentDTO delete(@PathVariable int id,HttpSession s){
-
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return commentService.delete(id,userId);
+        return commentService.delete(id,getLoggedId(s));
     }
 
     @PutMapping("/comments/{id}/like_unlike")
     public CommentReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return commentService.likeUnlike(id,userId);
+        return commentService.likeUnlike(id,getLoggedId(s));
     }
     @PutMapping("/comments/{id}/dislike_undislike")
     public CommentReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
-        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
-        if (userId == null){
-            throw new UnauthorizedException("Log in first.");
-        }
-        return commentService.likeUnlike(id,userId);
+        return commentService.likeUnlike(id,getLoggedId(s));
     }
 }
