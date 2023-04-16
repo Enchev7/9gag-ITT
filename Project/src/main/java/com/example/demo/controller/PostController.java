@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.DTOs.PostBasicInfoDTO;
 import com.example.demo.model.DTOs.PostDTO;
-import com.example.demo.model.DTOs.PostInfoDTO;
 import com.example.demo.service.PostService;
 import jakarta.servlet.UnavailableException;
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +19,7 @@ public class PostController extends AbstractController{
     
     @SneakyThrows
     @PostMapping("/posts")
-    public PostInfoDTO create(@RequestBody PostDTO dto, HttpSession s){
+    public PostDTO create(@RequestBody PostBasicInfoDTO dto, HttpSession s){
         Integer userId = (Integer) s.getAttribute("LOGGED_ID");
         if (userId == null){
             throw new UnavailableException("Log in to create new post");

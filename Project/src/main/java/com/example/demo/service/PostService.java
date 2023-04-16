@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.model.DTOs.PostBasicInfoDTO;
 import com.example.demo.model.DTOs.PostDTO;
-import com.example.demo.model.DTOs.PostInfoDTO;
 import com.example.demo.model.entities.Post;
 import com.example.demo.model.entities.User;
 import com.example.demo.model.exceptions.NotFoundException;
@@ -23,13 +23,13 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
     
-    public PostInfoDTO create(PostDTO dto, Integer userId){
+    public PostDTO create(PostBasicInfoDTO dto, Integer userId){
         //TODO
         //validate post info
         User u = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Post post = mapper.map(dto, Post.class);
         post.setOwner(u);
         postRepository.save(post);
-        return mapper.map(post, PostInfoDTO.class);
+        return mapper.map(post, PostDTO.class);
     }
 }
