@@ -108,7 +108,7 @@ public class CommentService {
         CommentReaction commentReaction;
         if (optionalCommentReaction.isPresent()){
             commentReaction=optionalCommentReaction.get();
-            commentReaction.setLiked(!commentReaction.isLiked());
+            commentReactionRepository.delete(commentReaction);
         }
         else {
             commentReaction=new CommentReaction();
@@ -116,8 +116,30 @@ public class CommentService {
             commentReaction.setUser(userRepository.findById(userId).get());
             commentReaction.setComment(optionalComment.get());
             commentReaction.setLiked(true);
+            commentReactionRepository.save(commentReaction);
         }
-        commentReactionRepository.save(commentReaction);
+        return mapper.map(commentReaction,CommentReactionDTO.class);
+    }
+    public CommentReactionDTO dislikeUnDislike(int id, int userId){
+        Optional<Comment> optionalComment = commentRepository.findById(id);
+        if (optionalComment.isEmpty()){
+            throw new NotFoundException("The comment you are trying to react to is missing.");
+        }
+        Optional<CommentReaction> optionalCommentReaction = commentReactionRepository.findByIdCommentIdAndIdUserId(id,userId);
+
+        CommentReaction commentReaction;
+        if (optionalCommentReaction.isPresent()){
+            commentReaction=optionalCommentReaction.get();
+            commentReactionRepository.delete(commentReaction);
+        }
+        else {
+            commentReaction=new CommentReaction();
+            commentReaction.setId(new CommentReaction.CommentReactionId(userId, id));
+            commentReaction.setUser(userRepository.findById(userId).get());
+            commentReaction.setComment(optionalComment.get());
+            commentReaction.setLiked(false);
+            commentReactionRepository.save(commentReaction);
+        }
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
 }

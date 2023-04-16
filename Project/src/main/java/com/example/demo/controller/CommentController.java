@@ -44,4 +44,12 @@ public class CommentController extends AbstractController{
         }
         return commentService.likeUnlike(id,userId);
     }
+    @PutMapping("/comments/{id}/dislike_undislike")
+    public CommentReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
+        Integer userId = (Integer) s.getAttribute("LOGGED_ID");
+        if (userId == null){
+            throw new UnauthorizedException("Log in first.");
+        }
+        return commentService.likeUnlike(id,userId);
+    }
 }
