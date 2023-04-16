@@ -1,5 +1,5 @@
 package com.example.demo.model.DTOs;
-
+import com.example.demo.model.entities.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,5 +21,6 @@ public class PostDTO {
     private String filePath;
     private UserWithoutPassDTO owner;
     private LocalDateTime createdAt;
+    private Set<Tag> tags = new HashSet<>();
     private List<CommentDTO> comments;
 }

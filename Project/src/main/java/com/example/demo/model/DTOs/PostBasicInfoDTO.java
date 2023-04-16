@@ -1,5 +1,6 @@
 package com.example.demo.model.DTOs;
 
+import com.example.demo.model.entities.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,5 @@ public class PostBasicInfoDTO {
     private int id;
     private String title;
     private String filePath;
-    private UserWithoutPassDTO owner;
     private LocalDateTime createdAt = LocalDateTime.now();
 }
