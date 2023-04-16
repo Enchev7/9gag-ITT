@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -33,4 +35,6 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> postTags = new HashSet<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Comment> comments=new ArrayList<>();
 }

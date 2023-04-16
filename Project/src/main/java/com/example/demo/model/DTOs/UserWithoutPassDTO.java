@@ -20,7 +20,7 @@ public class UserWithoutPassDTO {
     private boolean isVerified;
 //    private List<PostBasicInfoDTO> posts;
 //    private List<CommentBasicInfoDTO> comments;
-   //private List<CommentReactionDTO> commentsReactions;
+//   private List<CommentReactionDTO> commentsReactions;
 
 
 

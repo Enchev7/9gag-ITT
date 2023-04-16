@@ -52,7 +52,7 @@ public class UserService {
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         u.setVerCode(verCode);
         userRepository.save(u);
-        //sendVerificationCode(registerData.getEmail(),verCode);
+        sendVerificationCode(registerData.getEmail(),verCode);
         return mapper.map(u,UserWithoutPassDTO.class);
     }
     public UserWithoutPassDTO verify(String code){

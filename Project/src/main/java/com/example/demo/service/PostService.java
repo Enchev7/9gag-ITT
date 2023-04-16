@@ -16,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -94,6 +96,17 @@ public class PostService {
             postReactionRepository.save(postReaction);
         }
         return mapper.map(postReaction,PostReactionDTO.class);
+    }
+    public List<PostBasicInfoDTO> search(String query){
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(postRepository.findByTitleContainingIgnoreCase(query));
+        posts.addAll(postRepository.findByTagNameContainingIgnoreCase(query));
+        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+
+        for (Post p:posts){
+            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
+        }
+        return postsDTOs;
     }
 
 }

@@ -10,6 +10,8 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class PostController extends AbstractController{
     
@@ -29,5 +31,10 @@ public class PostController extends AbstractController{
     public PostReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
         return postService.dislikeUnDislike(id,getLoggedId(s));
     }
+    @GetMapping("/posts/search")
+    public List<PostBasicInfoDTO> search(@RequestParam("query") String query){
+        return postService.search(query);
+    }
+
     
 }
