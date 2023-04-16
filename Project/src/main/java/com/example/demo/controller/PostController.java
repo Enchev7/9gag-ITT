@@ -22,76 +22,6 @@ public class PostController extends AbstractController{
         Integer userId = (Integer) s.getAttribute("LOGGED_ID");
         return postService.create(dto, getLoggedId(s));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @PutMapping("/posts/{id}/like_unlike")
     public PostReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
         Integer userId = (Integer) s.getAttribute("LOGGED_ID");
@@ -108,7 +38,5 @@ public class PostController extends AbstractController{
         }
         return postService.dislikeUnDislike(id,userId);
     }
-
-
     
 }

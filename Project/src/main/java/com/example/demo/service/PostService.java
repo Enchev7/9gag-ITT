@@ -2,7 +2,6 @@ package com.example.demo.service;
 
 import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.DTOs.PostBasicInfoDTO;
-import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.entities.Post;
 import com.example.demo.model.entities.Tag;
 import com.example.demo.model.entities.User;
@@ -51,68 +50,6 @@ public class PostService {
         postRepository.save(post);
         return mapper.map(post, PostBasicInfoDTO.class);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public PostReactionDTO likeUnlike(int id, int userId){
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isEmpty()){
