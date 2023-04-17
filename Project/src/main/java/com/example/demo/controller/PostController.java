@@ -1,13 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.DTOs.PostBasicInfoDTO;
-import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.DTOs.PostReactionDTO;
 import com.example.demo.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -19,12 +19,14 @@ public class PostController extends AbstractController{
     
     @SneakyThrows
     @PostMapping("/posts")
-    public PostBasicInfoDTO create(@RequestBody PostDTO dto, HttpSession s){
-        return postService.create(dto, getLoggedId(s));
+    public PostBasicInfoDTO create(@RequestParam("title")String title, 
+                                   @RequestParam("file")MultipartFile file, 
+                                   @RequestParam("tags")String[] tags, HttpSession s){
+        return postService.create(title, file, tags, getLoggedId(s));
     }
     @PutMapping("/posts/{id}/like_unlike")
     public PostReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
-        return postService.likeUnlike(id,getLoggedId(s));
+        return postService.likeUnlike(id, getLoggedId(s));
     }
     @PutMapping("/posts/{id}/dislike_undislike")
     public PostReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){

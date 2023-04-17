@@ -18,7 +18,7 @@ public class PostBasicInfoDTO {
     private int id;
     private String title;
     private String filePath;
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Override
     public boolean equals(Object o) {
