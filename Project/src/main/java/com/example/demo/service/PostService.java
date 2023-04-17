@@ -11,7 +11,6 @@ import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.PostReactionRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,8 +38,12 @@ public class PostService {
     private UserRepository userRepository;
     
     public PostBasicInfoDTO create(String title, MultipartFile file, String[] tags, Integer userId){
-        //TODO
-        //validate post info
+        if(title == null || title.length() == 0 || title.length() > 280) {
+            throw new BadRequestException("Title should be a string up to 280 symbols");
+        }
+        if(file == null || file.isEmpty() || !isValidFileType(file)) {
+            throw new BadRequestException("File type not supported. Please upload an image (jpeg, jpg, png, gif) or a video (mp4, webm, quicktime, x-m4v)");
+        }
         User u = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Post post = new Post();
         post.setTitle(title);
@@ -55,7 +58,6 @@ public class PostService {
                 dir.mkdirs();
             }
             File f = new File(dir, fileName);
-//            f.createNewFile();
             Files.copy(file.getInputStream(), f.toPath());
             String url = dir.getName() + File.separator + f.getName();
             post.setFilePath(url);
@@ -149,5 +151,45 @@ public class PostService {
         }
         postRepository.delete(optionalPost.get());
         return mapper.map(optionalPost.get(),PostBasicInfoDTO.class);
+    }
+    private boolean isValidFileType(MultipartFile file) {
+        List<String> validFileTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/gif", "video/mp4", "video/webm", "video/quicktime", "video/x-m4v");
+        String fileType = file.getContentType();
+        return validFileTypes.contains(fileType);
+    }
+
+    public Post findById(int id) {
+        return postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post not found"));
+    }
+
+    public String getMediaType(Post post) {
+        String extension = FilenameUtils.getExtension(post.getFilePath());
+        switch (extension.toLowerCase()) {
+            case "jpg":
+            case "jpeg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "gif":
+                return "image/gif";
+            case "mp4":
+                return "video/mp4";
+            case "webm":
+                return "video/webm";
+            case "mov":
+                return "video/quicktime";
+            case "m4v":
+                return "video/x-m4v";
+            default:
+                throw new BadRequestException("Unsupported media type");
+        }
+    }
+
+    public File getMediaFile(Post post) {
+        File file = new File(post.getFilePath());
+        if (!file.exists()) {
+            throw new NotFoundException("File not found");
+        }
+        return file;
     }
 }
