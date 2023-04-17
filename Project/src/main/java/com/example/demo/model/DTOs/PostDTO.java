@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +22,6 @@ public class PostDTO {
     private String filePath;
     private UserWithoutPassDTO owner;
     private LocalDateTime createdAt;
-    private Set<Tag> tags = new HashSet<>();
+    private List<Tag> tags = new ArrayList<>();
     private List<CommentDTO> comments;
 }

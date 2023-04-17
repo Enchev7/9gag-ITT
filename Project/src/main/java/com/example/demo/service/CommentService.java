@@ -46,7 +46,7 @@ public class CommentService {
         if (content.length()>500){
             throw new BadRequestException("Can't exceed 500 chars limit.");
         }
-        boolean hasParent = parentId.length() > 0;
+        boolean hasParent = !parentId.equals("");
         Optional<Comment> optionalComment = null;
 
         if (hasParent){
@@ -55,8 +55,11 @@ public class CommentService {
             if (!optionalComment.isPresent()){
                 throw new NotFoundException("The comment you try to reply to is missing.");
             }
+            if (commentRepository.findByIdAndPostId(Integer.parseInt(parentId),postId).isEmpty()){
+                throw new BadRequestException("The comment you are trying to reply to is not on the current post!");
+            }
         }
-        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = userRepository.findById(userId).get();
 
         try{
             String ext = FilenameUtils.getExtension(file.getOriginalFilename());
@@ -76,7 +79,7 @@ public class CommentService {
                 comment.setParent(optionalComment.get());
             }
             comment.setPost(optionalPost.get());
-            comment.setOwner(optionalUser.get());
+            comment.setOwner(user);
             comment.setFilePath(url);
             commentRepository.save(comment);
             return mapper.map(comment,CommentDTO.class);

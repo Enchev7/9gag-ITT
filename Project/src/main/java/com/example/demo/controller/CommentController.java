@@ -32,6 +32,6 @@ public class CommentController extends AbstractController{
     }
     @PutMapping("/comments/{id}/dislike_undislike")
     public CommentReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
-        return commentService.likeUnlike(id,getLoggedId(s));
+        return commentService.dislikeUnDislike(id,getLoggedId(s));
     }
 }

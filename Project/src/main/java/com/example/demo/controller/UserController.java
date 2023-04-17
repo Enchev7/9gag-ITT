@@ -48,7 +48,7 @@ public class UserController extends AbstractController{
             return ResponseEntity.ok("Logged out successfully");
 
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not logged in");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You haven't logged in, in the first place.");
         }
     }
 

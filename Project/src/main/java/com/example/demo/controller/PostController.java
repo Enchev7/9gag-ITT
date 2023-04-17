@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.model.DTOs.PostBasicInfoDTO;
 import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.DTOs.PostReactionDTO;
-import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
@@ -38,6 +37,10 @@ public class PostController extends AbstractController{
     @GetMapping("/posts/sort_by_upload_date")
     public List<PostBasicInfoDTO> sortByUploadDate(){
         return postService.sortByUploadDate();
+    }
+    @DeleteMapping("/posts/{id}")
+    public PostBasicInfoDTO delete(@PathVariable int id, HttpSession s){
+        return postService.delete(id,getLoggedId(s));
     }
 
 

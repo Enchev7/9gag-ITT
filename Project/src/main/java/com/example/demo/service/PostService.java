@@ -8,6 +8,7 @@ import com.example.demo.model.entities.User;
 import com.example.demo.model.DTOs.PostReactionDTO;
 import com.example.demo.model.entities.*;
 import com.example.demo.model.exceptions.NotFoundException;
+import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.PostReactionRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
@@ -44,7 +45,7 @@ public class PostService {
         Post post = mapper.map(dto, Post.class);
         post.setOwner(u);
         post.setCreatedAt(LocalDateTime.now());
-        post.setPostTags(new HashSet<>());
+        post.setPostTags(new ArrayList<>());
         for (Tag tag : dto.getTags()){
             post.getPostTags().add(tagService.findOrCreateTagByName(tag.getName()));
         }
@@ -117,5 +118,18 @@ public class PostService {
             postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
         }
         return postsDTOs;
+    }
+
+    public PostBasicInfoDTO delete(int id, int userId){
+
+        Optional<Post> optionalPost = postRepository.findById(id);
+        if (optionalPost.isEmpty()){
+            throw new NotFoundException("Post not found!");
+        }
+        if (optionalPost.get().getOwner().getId()!=userId){
+            throw new UnauthorizedException("Can't delete a post you haven't created yourself!");
+        }
+        postRepository.delete(optionalPost.get());
+        return mapper.map(optionalPost.get(),PostBasicInfoDTO.class);
     }
 }
