@@ -32,6 +32,7 @@ public class CommentReaction {
     @Column(name = "is_liked")
     private boolean isLiked;
 
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -45,18 +46,19 @@ public class CommentReaction {
         @Column(name = "comment_id")
         private int commentId;
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            CommentReactionId that = (CommentReactionId) o;
-            return userId == that.userId &&
-                    commentId == that.commentId;
-        }
-        @Override
-        public int hashCode() {
-            return Objects.hash(userId, commentId);
-        }
+
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CommentReaction that = (CommentReaction) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

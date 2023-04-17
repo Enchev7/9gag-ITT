@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -36,10 +34,10 @@ public class User {
     @Column(name = "is_verified")
     private boolean isVerified;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<Post> posts=new ArrayList<>();
+    private Set<Post> posts=new HashSet<>();
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<Comment> comments=new ArrayList<>();
+    private Set<Comment> comments=new HashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<CommentReaction> commentReactions = new ArrayList<>();
+    private Set<CommentReaction> commentReactions = new HashSet<>();
 
 }

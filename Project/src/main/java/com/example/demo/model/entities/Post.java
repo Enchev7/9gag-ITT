@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Setter
 @Getter
@@ -37,8 +34,20 @@ public class Post {
     private Set<Tag> postTags = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<Comment> comments=new ArrayList<>();
+    private Set<Comment> comments=new HashSet<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostReaction> postReactions = new ArrayList<>();
-    
+    private Set<PostReaction> postReactions = new HashSet<>();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

@@ -2,8 +2,8 @@ package com.example.demo.service;
 
 import com.example.demo.model.DTOs.PostDTO;
 import com.example.demo.model.DTOs.PostBasicInfoDTO;
+import com.example.demo.model.DTOs.TagDTO;
 import com.example.demo.model.entities.Post;
-import com.example.demo.model.entities.Tag;
 import com.example.demo.model.entities.User;
 import com.example.demo.model.DTOs.PostReactionDTO;
 import com.example.demo.model.entities.*;
@@ -45,9 +45,9 @@ public class PostService {
         Post post = mapper.map(dto, Post.class);
         post.setOwner(u);
         post.setCreatedAt(LocalDateTime.now());
-        post.setPostTags(new ArrayList<>());
-        for (Tag tag : dto.getTags()){
-            post.getPostTags().add(tagService.findOrCreateTagByName(tag.getName()));
+        post.setPostTags(new HashSet<>());
+        for (TagDTO tagDto : dto.getTags()){
+            post.getPostTags().add(tagService.findOrCreateTagByName(tagDto.getName()));
         }
         postRepository.save(post);
         return mapper.map(post, PostBasicInfoDTO.class);

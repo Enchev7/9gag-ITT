@@ -5,8 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+
 import java.util.HashSet;
+
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,23 +15,18 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO {
+public class TagDTO {
 
     private int id;
-    private UserWithoutPassDTO owner;
-    private PostBasicInfoDTO post;
-    private CommentBasicInfoDTO parent;
-    private Set<CommentReactionDTO> reactions=new HashSet<>();
-    private String filePath;
-    private LocalDateTime createdAt;
-    private String content;
+    private String name;
+    private Set<PostBasicInfoDTO> postTags = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentDTO that = (CommentDTO) o;
-        return id == that.id;
+        TagDTO tagDTO = (TagDTO) o;
+        return id == tagDTO.id;
     }
 
     @Override

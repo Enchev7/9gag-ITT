@@ -36,9 +36,20 @@ public class Comment {
     @Column
     private String content;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<Comment> replies =new ArrayList<>();
+    private Set<Comment> replies =new HashSet<>();
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
-    private List<CommentReaction> commentReactions = new ArrayList<>();
+    private Set<CommentReaction> commentReactions = new HashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return id == comment.id;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
