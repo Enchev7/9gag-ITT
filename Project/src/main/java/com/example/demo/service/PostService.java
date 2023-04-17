@@ -28,7 +28,6 @@ public class PostService {
     
     @Autowired
     private ModelMapper mapper;
-    
     @Autowired
     private TagService tagService;
     @Autowired

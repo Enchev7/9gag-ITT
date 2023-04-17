@@ -32,7 +32,6 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
     private Set<Tag> postTags = new HashSet<>();
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<Comment> comments=new HashSet<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
