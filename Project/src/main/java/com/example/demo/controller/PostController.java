@@ -35,6 +35,11 @@ public class PostController extends AbstractController{
     public List<PostBasicInfoDTO> search(@RequestParam("query") String query){
         return postService.search(query);
     }
+    @GetMapping("/posts/sort_by_upload_date")
+    public List<PostBasicInfoDTO> sortByUploadDate(){
+        return postService.sortByUploadDate();
+    }
+
 
     
 }

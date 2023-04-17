@@ -34,7 +34,6 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private PostReactionRepository postReactionRepository;
-    
     @Autowired
     private UserRepository userRepository;
 
@@ -109,4 +108,14 @@ public class PostService {
         return postsDTOs;
     }
 
+    public List<PostBasicInfoDTO> sortByUploadDate() {
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(postRepository.findAllByOrderByCreatedAtDesc());
+        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+
+        for (Post p:posts){
+            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
+        }
+        return postsDTOs;
+    }
 }
