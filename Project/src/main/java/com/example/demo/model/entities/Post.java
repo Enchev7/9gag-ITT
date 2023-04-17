@@ -40,57 +40,5 @@ public class Post {
     private List<Comment> comments=new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostReaction> postReactions = new ArrayList<>();
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((createdAt == null) ? 0 : createdAt.hashCode());
-        result = prime * result + ((filePath == null) ? 0 : filePath.hashCode());
-        result = prime * result + id;
-        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((postTags == null) ? 0 : postTags.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Post other = (Post) obj;
-        if (createdAt == null) {
-            if (other.createdAt != null)
-                return false;
-        } else if (!createdAt.equals(other.createdAt))
-            return false;
-        if (filePath == null) {
-            if (other.filePath != null)
-                return false;
-        } else if (!filePath.equals(other.filePath))
-            return false;
-        if (id != other.id)
-            return false;
-        if (owner == null) {
-            if (other.owner != null)
-                return false;
-        } else if (!owner.equals(other.owner))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (postTags == null) {
-            if (other.postTags != null)
-                return false;
-        } else if (!postTags.equals(other.postTags))
-            return false;
-        return true;
-    }
     
 }

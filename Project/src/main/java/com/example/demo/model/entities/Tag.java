@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -23,4 +20,19 @@ public class Tag {
     
     @ManyToMany(mappedBy = "postTags", cascade = CascadeType.ALL)
     private List<Post> postTags = new ArrayList<>();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        Tag tag = (Tag) obj;
+        return Objects.equals(id, tag.id);
+    }
 }
