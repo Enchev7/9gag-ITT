@@ -52,7 +52,8 @@ public class PostController extends AbstractController{
     @SneakyThrows
     @GetMapping("posts/{id}/download_media")
     public ResponseEntity<Resource> download(@PathVariable("id") int postId, HttpSession s) {
-        Resource resource = postService.downloadMedia(postId, getLoggedId(s));
+        int userId = getLoggedId(s);
+        Resource resource = postService.downloadMedia(postId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .contentLength(resource.contentLength())

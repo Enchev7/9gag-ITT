@@ -160,7 +160,7 @@ public class PostService {
         return validFileTypes.contains(fileType);
     }
 
-    public Resource downloadMedia(int postId, int userId) {
+    public Resource downloadMedia(int postId) {
         Post post = findById(postId);
         File file = getMediaFile(post);
         Resource resource = new FileSystemResource(file);
@@ -168,7 +168,7 @@ public class PostService {
     }
 
     public Post findById(int id) {
-        return postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post not found"));
+        return postRepository.findById(id).orElseThrow(() -> new  NotFoundException("Post not found"));
     }
 
     public String getMediaType(int postId) {
