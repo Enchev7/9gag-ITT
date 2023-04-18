@@ -161,7 +161,6 @@ public class PostService {
     }
 
     public Resource downloadMedia(int postId, int userId) {
-        User u = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Post post = findById(postId);
         File file = getMediaFile(post);
         Resource resource = new FileSystemResource(file);
