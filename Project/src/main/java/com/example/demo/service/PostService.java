@@ -59,7 +59,7 @@ public class PostService extends AbstractService{
         postRepository.save(post);
         return mapper.map(post, PostBasicInfoDTO.class);
     }
-    public PostReactionDTO likeUnlike(int id, int userId){
+    public PostReactionDTO react(int id, int userId,boolean reaction){
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isEmpty()){
             throw new NotFoundException("The post you are trying to react to is missing.");
@@ -69,41 +69,26 @@ public class PostService extends AbstractService{
         PostReaction postReaction;
         if (optionalPostReaction.isPresent()){
             postReaction=optionalPostReaction.get();
-            postReactionRepository.delete(postReaction);
+            if (postReaction.isLiked() == reaction){
+                postReactionRepository.delete(postReaction);
+            }
+            else{
+                postReaction.setLiked(reaction);
+                postReactionRepository.save(postReaction);
+            }
         }
         else {
             postReaction=new PostReaction();
             postReaction.setId(new PostReaction.PostReactionId(userId, id));
             postReaction.setUser(userRepository.findById(userId).get());
             postReaction.setPost(optionalPost.get());
-            postReaction.setLiked(true);
+            postReaction.setLiked(reaction);
             postReactionRepository.save(postReaction);
         }
         return mapper.map(postReaction,PostReactionDTO.class);
     }
 
-    public PostReactionDTO dislikeUnDislike(int id, int userId){
-        Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isEmpty()){
-            throw new NotFoundException("The post you are trying to react to is missing.");
-        }
-        Optional<PostReaction> optionalPostReaction = postReactionRepository.findByIdPostIdAndIdUserId(id,userId);
 
-        PostReaction postReaction;
-        if (optionalPostReaction.isPresent()){
-            postReaction=optionalPostReaction.get();
-            postReactionRepository.delete(postReaction);
-        }
-        else {
-            postReaction=new PostReaction();
-            postReaction.setId(new PostReaction.PostReactionId(userId, id));
-            postReaction.setUser(userRepository.findById(userId).get());
-            postReaction.setPost(optionalPost.get());
-            postReaction.setLiked(false);
-            postReactionRepository.save(postReaction);
-        }
-        return mapper.map(postReaction,PostReactionDTO.class);
-    }
     public List<PostBasicInfoDTO> search(String query){
         List<Post> posts = new ArrayList<>();
         posts.addAll(postRepository.findByTitleContainingIgnoreCase(query));

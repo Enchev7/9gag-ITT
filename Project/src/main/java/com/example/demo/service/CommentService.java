@@ -11,18 +11,13 @@ import com.example.demo.model.repositories.CommentReactionRepository;
 import com.example.demo.model.repositories.CommentRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
-import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class CommentService extends AbstractService{
@@ -85,7 +80,7 @@ public class CommentService extends AbstractService{
         commentRepository.delete(optionalComment.get());
         return mapper.map(optionalComment.get(),CommentDTO.class);
     }
-    public CommentReactionDTO likeUnlike(int id, int userId){
+    public CommentReactionDTO react(int id, int userId,boolean reaction){
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()){
             throw new NotFoundException("The comment you are trying to react to is missing.");
@@ -95,38 +90,23 @@ public class CommentService extends AbstractService{
         CommentReaction commentReaction;
         if (optionalCommentReaction.isPresent()){
             commentReaction=optionalCommentReaction.get();
-            commentReactionRepository.delete(commentReaction);
+            if (commentReaction.isLiked() == reaction){
+                commentReactionRepository.delete(commentReaction);
+            }
+            else {
+                commentReaction.setLiked(reaction);
+                commentReactionRepository.save(commentReaction);
+            }
         }
         else {
             commentReaction=new CommentReaction();
             commentReaction.setId(new CommentReaction.CommentReactionId(userId, id));
             commentReaction.setUser(userRepository.findById(userId).get());
             commentReaction.setComment(optionalComment.get());
-            commentReaction.setLiked(true);
+            commentReaction.setLiked(reaction);
             commentReactionRepository.save(commentReaction);
         }
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
-    public CommentReactionDTO dislikeUnDislike(int id, int userId){
-        Optional<Comment> optionalComment = commentRepository.findById(id);
-        if (optionalComment.isEmpty()){
-            throw new NotFoundException("The comment you are trying to react to is missing.");
-        }
-        Optional<CommentReaction> optionalCommentReaction = commentReactionRepository.findByIdCommentIdAndIdUserId(id,userId);
 
-        CommentReaction commentReaction;
-        if (optionalCommentReaction.isPresent()){
-            commentReaction=optionalCommentReaction.get();
-            commentReactionRepository.delete(commentReaction);
-        }
-        else {
-            commentReaction=new CommentReaction();
-            commentReaction.setId(new CommentReaction.CommentReactionId(userId, id));
-            commentReaction.setUser(userRepository.findById(userId).get());
-            commentReaction.setComment(optionalComment.get());
-            commentReaction.setLiked(false);
-            commentReactionRepository.save(commentReaction);
-        }
-        return mapper.map(commentReaction,CommentReactionDTO.class);
-    }
 }

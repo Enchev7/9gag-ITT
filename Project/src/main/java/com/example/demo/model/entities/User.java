@@ -33,6 +33,9 @@ public class User {
     private String verCode;
     @Column(name = "is_verified")
     private boolean isVerified;
+    @Column(name = "registered_at")
+    private LocalDateTime registeredAt;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<Post> posts=new HashSet<>();
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)

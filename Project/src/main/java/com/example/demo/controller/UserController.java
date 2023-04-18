@@ -17,7 +17,11 @@ public class UserController extends AbstractController{
     private UserService userService;
 
     @PostMapping("/users")
-    public UserWithoutPassDTO register(@RequestBody UserRegisterDataDTO registerData){
+    public UserWithoutPassDTO register(@RequestBody UserRegisterDataDTO registerData,HttpSession s){
+        Boolean isLoggedIn = (Boolean) s.getAttribute("LOGGED");
+        if (isLoggedIn != null && isLoggedIn) {
+            throw new BadRequestException("Log out first.");
+        }
         return userService.register(registerData);
     }
     @GetMapping("users/verify")
@@ -30,7 +34,6 @@ public class UserController extends AbstractController{
 
         Boolean isLoggedIn = (Boolean) s.getAttribute("LOGGED");
         if (isLoggedIn != null && isLoggedIn) {
-
             throw new BadRequestException("Already logged in.");
         }
         UserWithoutPassDTO respDto = userService.login(dto);
@@ -40,16 +43,13 @@ public class UserController extends AbstractController{
     }
     @GetMapping("/users/logout")
     public ResponseEntity<String> logout(HttpSession session) {
-
         Boolean isLoggedIn = (Boolean) session.getAttribute("LOGGED");
 
-        if (isLoggedIn != null && isLoggedIn) {
-            session.invalidate();
-            return ResponseEntity.ok("Logged out successfully");
-
-        } else {
+        if (isLoggedIn == null || !isLoggedIn) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You haven't logged in, in the first place.");
         }
+        session.invalidate();
+        return ResponseEntity.ok("Logged out successfully");
     }
 
 

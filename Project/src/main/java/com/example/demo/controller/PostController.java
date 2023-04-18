@@ -30,11 +30,11 @@ public class PostController extends AbstractController{
     }
     @PutMapping("/posts/{id}/like_unlike")
     public PostReactionDTO likeUnlike(@PathVariable int id, HttpSession s){
-        return postService.likeUnlike(id, getLoggedId(s));
+        return postService.react(id, getLoggedId(s),true);
     }
     @PutMapping("/posts/{id}/dislike_undislike")
     public PostReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
-        return postService.dislikeUnDislike(id,getLoggedId(s));
+        return postService.react(id,getLoggedId(s),false);
     }
     @GetMapping("/posts/search")
     public List<PostBasicInfoDTO> search(@RequestParam("query") String query){

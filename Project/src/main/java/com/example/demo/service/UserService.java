@@ -11,10 +11,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,10 +51,11 @@ public class UserService {
         }
         String verCode = UUID.randomUUID().toString();
         User u = mapper.map(registerData,User.class);
+        u.setRegisteredAt(LocalDateTime.now());
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         u.setVerCode(verCode);
         userRepository.save(u);
-        sendVerificationCode(registerData.getEmail(),verCode);
+        new Thread(() -> sendVerificationCode(registerData.getEmail(),verCode)).start();
         return mapper.map(u,UserWithoutPassDTO.class);
     }
     public UserWithoutPassDTO verify(String code){
@@ -91,7 +94,19 @@ public class UserService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject("Account Verification");
-        message.setText("Your verification code is: " + code);
+        message.setText("Click the following link to verify your account: http://localhost:7373/users/verify?code=" + code);
         mailSender.send(message);
     }
+    @Scheduled(fixedRate = 900000)
+    public void deleteVerificationCodesForUnverifiedUsers() {
+        long thresholdInSeconds = 900;
+        LocalDateTime thresholdTime = LocalDateTime.now().minusSeconds(thresholdInSeconds);
+
+        List<User> unverifiedUsers = userRepository.findUnverifiedUsersRegisteredBefore(thresholdTime);
+
+        userRepository.deleteAll(unverifiedUsers);
+    }
+
+
+
 }
