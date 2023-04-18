@@ -2,7 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.model.DTOs.CommentDTO;
 import com.example.demo.model.DTOs.CommentReactionDTO;
-import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;

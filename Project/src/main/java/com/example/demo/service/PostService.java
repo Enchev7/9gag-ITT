@@ -20,13 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-public class PostService {
+public class PostService extends AbstractService{
     
     @Autowired
     private ModelMapper mapper;
@@ -52,27 +50,14 @@ public class PostService {
         post.setOwner(u);
         post.setCreatedAt(LocalDateTime.now());
         post.setPostTags(new HashSet<>());
-        try {
-            String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-            String fileName = UUID.randomUUID() + "." + ext;
-            File dir = new File("uploads");
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            File f = new File(dir, fileName);
-            Files.copy(file.getInputStream(), f.toPath());
-            String url = dir.getName() + File.separator + f.getName();
-            post.setFilePath(url);
-            for (String tag : tags) {
-                post.getPostTags().add(tagService.findOrCreateTagByName(tag));
-            }
-            postRepository.save(post);
-            return mapper.map(post, PostBasicInfoDTO.class);
+        
+        String url = saveFile(file);
+        post.setFilePath(url);
+        for (String tag : tags) {
+            post.getPostTags().add(tagService.findOrCreateTagByName(tag));
         }
-        catch (IOException e){
-            e.printStackTrace();
-            throw new BadRequestException(e.getMessage() + "File save unsuccessful");
-        }
+        postRepository.save(post);
+        return mapper.map(post, PostBasicInfoDTO.class);
     }
     public PostReactionDTO likeUnlike(int id, int userId){
         Optional<Post> optionalPost = postRepository.findById(id);

@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class CommentService {
+public class CommentService extends AbstractService{
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -60,34 +60,18 @@ public class CommentService {
             }
         }
         User user = userRepository.findById(userId).get();
-
-        try{
-            String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-            String name = UUID.randomUUID() + "."+ext;
-            File dir = new File("uploads");
-            if(!dir.exists()){
-                dir.mkdirs();
-            }
-            File f = new File(dir, name);
-            Files.copy(file.getInputStream(), f.toPath());
-            String url = dir.getName() + File.separator + f.getName();
-
-            Comment comment = new Comment();
-            comment.setCreatedAt(LocalDateTime.now());
-            comment.setContent(content);
-            if (hasParent){
-                comment.setParent(optionalComment.get());
-            }
-            comment.setPost(optionalPost.get());
-            comment.setOwner(user);
-            comment.setFilePath(url);
-            commentRepository.save(comment);
-            return mapper.map(comment,CommentDTO.class);
+        String url = saveFile(file);
+        Comment comment = new Comment();
+        comment.setCreatedAt(LocalDateTime.now());
+        comment.setContent(content);
+        if (hasParent){
+            comment.setParent(optionalComment.get());
         }
-        catch (IOException e){
-            e.printStackTrace();
-            throw new BadRequestException(e.getMessage());
-        }
+        comment.setPost(optionalPost.get());
+        comment.setOwner(user);
+        comment.setFilePath(url);
+        commentRepository.save(comment);
+        return mapper.map(comment,CommentDTO.class);
     }
     public CommentDTO delete(int id,int userId){
 
