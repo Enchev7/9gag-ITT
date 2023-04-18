@@ -14,6 +14,8 @@ import com.example.demo.model.repositories.UserRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -158,11 +160,20 @@ public class PostService {
         return validFileTypes.contains(fileType);
     }
 
+    public Resource downloadMedia(int postId, int userId) {
+        User u = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Post post = findById(postId);
+        File file = getMediaFile(post);
+        Resource resource = new FileSystemResource(file);
+        return resource;
+    }
+
     public Post findById(int id) {
         return postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post not found"));
     }
 
-    public String getMediaType(Post post) {
+    public String getMediaType(int postId) {
+        Post post = findById(postId);
         String extension = FilenameUtils.getExtension(post.getFilePath());
         switch (extension.toLowerCase()) {
             case "jpg":

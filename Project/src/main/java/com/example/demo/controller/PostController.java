@@ -2,12 +2,10 @@ package com.example.demo.controller;
 
 import com.example.demo.model.DTOs.PostBasicInfoDTO;
 import com.example.demo.model.DTOs.PostReactionDTO;
-import com.example.demo.model.entities.Post;
 import com.example.demo.service.PostService;
 import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
 
 @RestController
@@ -51,15 +48,15 @@ public class PostController extends AbstractController{
     public PostBasicInfoDTO delete(@PathVariable int id, HttpSession s){
         return postService.delete(id,getLoggedId(s));
     }
+
+    @SneakyThrows
     @GetMapping("posts/{id}/download_media")
-    public ResponseEntity<Resource> download(@PathVariable("id") int postId) {
-        Post post = postService.findById(postId);
-        File file = postService.getMediaFile(post);
-        Resource resource = new FileSystemResource(file);
+    public ResponseEntity<Resource> download(@PathVariable("id") int postId, HttpSession s) {
+        Resource resource = postService.downloadMedia(postId, getLoggedId(s));
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                .contentLength(file.length())
-                .contentType(MediaType.parseMediaType(postService.getMediaType(post)))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentLength(resource.contentLength())
+                .contentType(MediaType.parseMediaType(postService.getMediaType(postId)))
                 .body(resource);
     }
 }
