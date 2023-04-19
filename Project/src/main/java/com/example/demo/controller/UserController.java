@@ -51,6 +51,10 @@ public class UserController extends AbstractController{
         session.invalidate();
         return ResponseEntity.ok("Logged out successfully");
     }
+    @PutMapping("/users/{id}/ban_unban")
+    public UserWithoutPassDTO banUnban(@PathVariable int id, HttpSession s){
+        return userService.banUnban(id,getLoggedId(s));
+    }
 
 
 

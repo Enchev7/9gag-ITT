@@ -5,6 +5,7 @@ import com.example.demo.model.DTOs.UserRegisterDataDTO;
 import com.example.demo.model.DTOs.UserWithoutPassDTO;
 import com.example.demo.model.entities.User;
 import com.example.demo.model.exceptions.BadRequestException;
+import com.example.demo.model.exceptions.NotFoundException;
 import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -83,10 +84,29 @@ public class UserService {
         if (!opt.get().isVerified()){
             throw new UnauthorizedException("Wrong credentials");
         }
+        if (opt.get().isBanned()){
+            throw new UnauthorizedException("You've been banned!");
+        }
         User u = opt.get();
         u.setLastLoginTime(LocalDateTime.now());
         userRepository.save(u);
         return mapper.map(u, UserWithoutPassDTO.class);
+    }
+    public UserWithoutPassDTO banUnban(int bannableUserId,int sessionId){
+        Optional<User> admin = userRepository.findById(sessionId);
+        if (!admin.get().isAdmin()) {
+            throw new UnauthorizedException("No permission!");
+        }
+        Optional<User> bannableUser = userRepository.findById(bannableUserId);
+        if (bannableUser.isEmpty()) {
+            throw new NotFoundException("User doesn't exist!");
+        }
+        if (bannableUser.get().isAdmin()) {
+            throw new UnauthorizedException("No permission!");
+        }
+        bannableUser.get().setBanned(!bannableUser.get().isBanned());
+        userRepository.save(bannableUser.get());
+        return mapper.map(bannableUser.get(),UserWithoutPassDTO.class);
     }
 
 

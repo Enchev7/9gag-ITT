@@ -74,7 +74,9 @@ public class CommentService extends AbstractService{
         if (optionalComment.isEmpty()){
             throw new NotFoundException("Comment not found!");
         }
-        if (optionalComment.get().getOwner().getId()!=userId){
+        User owner = optionalComment.get().getOwner();
+        Optional<User> admin = userRepository.findById(userId);
+        if (owner.getId()!=userId && !admin.get().isAdmin()){
             throw new UnauthorizedException("Can't delete a comment you haven't created yourself!");
         }
         commentRepository.delete(optionalComment.get());

@@ -118,7 +118,9 @@ public class PostService extends AbstractService{
         if (optionalPost.isEmpty()){
             throw new NotFoundException("Post not found!");
         }
-        if (optionalPost.get().getOwner().getId()!=userId){
+        User owner = optionalPost.get().getOwner();
+        Optional<User> admin = userRepository.findById(userId);
+        if (owner.getId()!=userId && !admin.get().isAdmin()){
             throw new UnauthorizedException("Can't delete a post you haven't created yourself!");
         }
         postRepository.delete(optionalPost.get());

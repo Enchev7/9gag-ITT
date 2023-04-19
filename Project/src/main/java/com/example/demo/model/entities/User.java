@@ -35,7 +35,10 @@ public class User {
     private boolean isVerified;
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
-
+    @Column(name = "is_admin")
+    private boolean isAdmin;
+    @Column(name = "is_banned")
+    private boolean isBanned;
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private Set<Post> posts=new HashSet<>();
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
