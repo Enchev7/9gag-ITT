@@ -1,6 +1,5 @@
 package com.example.demo.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +18,7 @@ public class Tag {
     private String name;
     
     @ManyToMany(mappedBy = "postTags", cascade = CascadeType.ALL)
-    private List<Post> postTags = new ArrayList<>();
+    private Set<Post> postTags = new HashSet<>();
 
     @Override
     public int hashCode() {

@@ -60,4 +60,8 @@ public class PostController extends AbstractController{
                 .contentType(MediaType.parseMediaType(postService.getMediaType(postId)))
                 .body(resource);
     }
+    @PutMapping("/posts/{id}/report")
+    public PostBasicInfoDTO report(@PathVariable int id,HttpSession s){
+        return postService.report(id,getLoggedId(s));
+    }
 }

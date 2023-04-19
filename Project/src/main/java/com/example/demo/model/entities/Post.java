@@ -36,6 +36,15 @@ public class Post {
     private Set<Comment> comments=new HashSet<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostReaction> postReactions = new HashSet<>();
+    @Column
+    private int reports;
+    @ManyToMany
+    @JoinTable(
+            name = "post_reports",
+            joinColumns = @JoinColumn(name = "reported_id"),
+            inverseJoinColumns = @JoinColumn(name = "reporter_id")
+    )
+    private Set<User> reportedBy = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

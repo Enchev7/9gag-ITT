@@ -126,12 +126,6 @@ public class PostService extends AbstractService{
         postRepository.delete(optionalPost.get());
         return mapper.map(optionalPost.get(),PostBasicInfoDTO.class);
     }
-    private boolean isValidFileType(MultipartFile file) {
-        List<String> validFileTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/gif", "video/mp4", "video/webm", "video/quicktime", "video/x-m4v");
-        String fileType = file.getContentType();
-        return validFileTypes.contains(fileType);
-    }
-
     public Resource downloadMedia(int postId) {
         Post post = findById(postId);
         File file = getMediaFile(post);
@@ -139,7 +133,29 @@ public class PostService extends AbstractService{
         return resource;
     }
 
-    public Post findById(int id) {
+    public PostBasicInfoDTO report(int postId, int userId){
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isEmpty()){
+            throw new NotFoundException("Post not found!");
+        }
+        Post post = optionalPost.get();
+        if (post.getReports()>5){
+            throw new NotFoundException("Post not found!");
+        }
+        Optional<User> optionalUser = userRepository.findById(userId);
+        post.getReportedBy().add(optionalUser.get());
+        optionalUser.get().getReportedPosts().add(post);
+        post.setReports(post.getReports()+1);
+        postRepository.save(post);
+        return mapper.map(post,PostBasicInfoDTO.class);
+    }
+    private boolean isValidFileType(MultipartFile file) {
+        List<String> validFileTypes = Arrays.asList("image/jpeg", "image/jpg", "image/png", "image/gif", "video/mp4", "video/webm", "video/quicktime", "video/x-m4v");
+        String fileType = file.getContentType();
+        return validFileTypes.contains(fileType);
+    }
+
+    private Post findById(int id) {
         return postRepository.findById(id).orElseThrow(() -> new  NotFoundException("Post not found"));
     }
 
@@ -167,7 +183,7 @@ public class PostService extends AbstractService{
         }
     }
 
-    public File getMediaFile(Post post) {
+    private File getMediaFile(Post post) {
         File file = new File(post.getFilePath());
         if (!file.exists()) {
             throw new NotFoundException("File not found");
