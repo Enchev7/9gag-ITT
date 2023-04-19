@@ -143,6 +143,19 @@ public class PostService extends AbstractService{
             throw new NotFoundException("Post not found!");
         }
         Optional<User> optionalUser = userRepository.findById(userId);
+
+        if (post.getReportedBy().size()>0){
+            boolean hasReported=false;
+            for (User u:post.getReportedBy()){
+                if (u.getId()==optionalUser.get().getId()){
+                    hasReported=true;
+                    break;
+                }
+            }
+            if (hasReported){
+                throw new BadRequestException("You've already reported this post.");
+            }
+        }
         post.getReportedBy().add(optionalUser.get());
         optionalUser.get().getReportedPosts().add(post);
         post.setReports(post.getReports()+1);
