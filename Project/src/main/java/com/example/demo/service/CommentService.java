@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -78,6 +81,11 @@ public class CommentService extends AbstractService{
         Optional<User> admin = userRepository.findById(userId);
         if (owner.getId()!=userId && !admin.get().isAdmin()){
             throw new UnauthorizedException("Can't delete a comment you haven't created yourself!");
+        }
+        try {
+            Files.delete(Path.of(optionalComment.get().getFilePath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         commentRepository.delete(optionalComment.get());
         return mapper.map(optionalComment.get(),CommentDTO.class);

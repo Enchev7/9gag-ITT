@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,9 +19,7 @@ public class PostBasicInfoDTO {
     private String title;
     private String filePath;
     private LocalDateTime createdAt;
-    private Set<TagDTO> tags=new HashSet<>();
     private int reports;
-    private Set<UserWithoutPassDTO> reportedBy=new HashSet<>();
 
 
 

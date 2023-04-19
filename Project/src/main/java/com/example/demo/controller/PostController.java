@@ -40,9 +40,9 @@ public class PostController extends AbstractController{
     public List<PostBasicInfoDTO> search(@RequestParam("query") String query){
         return postService.search(query);
     }
-    @GetMapping("/posts/sort_by_upload_date")
-    public List<PostBasicInfoDTO> sortByUploadDate(){
-        return postService.sortByUploadDate();
+    @GetMapping("/posts/fresh")
+    public List<PostBasicInfoDTO> fresh(){
+        return postService.fresh();
     }
     @DeleteMapping("/posts/{id}")
     public PostBasicInfoDTO delete(@PathVariable int id, HttpSession s){

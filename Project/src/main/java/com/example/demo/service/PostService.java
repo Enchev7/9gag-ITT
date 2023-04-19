@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -101,7 +104,7 @@ public class PostService extends AbstractService{
         return postsDTOs;
     }
 
-    public List<PostBasicInfoDTO> sortByUploadDate() {
+    public List<PostBasicInfoDTO> fresh() {
         List<Post> posts = new ArrayList<>();
         posts.addAll(postRepository.findAllByOrderByCreatedAtDesc());
         List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
@@ -122,6 +125,11 @@ public class PostService extends AbstractService{
         Optional<User> admin = userRepository.findById(userId);
         if (owner.getId()!=userId && !admin.get().isAdmin()){
             throw new UnauthorizedException("Can't delete a post you haven't created yourself!");
+        }
+        try {
+            Files.delete(Path.of(optionalPost.get().getFilePath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         postRepository.delete(optionalPost.get());
         return mapper.map(optionalPost.get(),PostBasicInfoDTO.class);
