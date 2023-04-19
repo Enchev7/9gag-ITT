@@ -106,17 +106,6 @@ public class PostService extends AbstractService{
         return postsDTOs;
     }
 
-    public List<PostBasicInfoDTO> fresh() {
-        List<Post> posts = new ArrayList<>();
-        posts.addAll(postRepository.findAllByOrderByCreatedAtDesc());
-        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
-
-        for (Post p:posts){
-            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
-        }
-        return postsDTOs;
-    }
-
     public List<PostBasicInfoDTO> getTrending() {
         List<Post> posts = new ArrayList<>();
         posts.addAll(postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0)));
@@ -128,7 +117,7 @@ public class PostService extends AbstractService{
         return postsDTOs;
     }
 
-    public List<PostBasicInfoDTO> getFresh() {
+    public List<PostBasicInfoDTO> fresh() {
         List<Post> posts = new ArrayList<>();
         posts.addAll(postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN)));
         List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();

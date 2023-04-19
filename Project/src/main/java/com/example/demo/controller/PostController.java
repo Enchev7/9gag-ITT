@@ -54,6 +54,7 @@ public class PostController extends AbstractController{
         return postService.getTop();
     }
     
+    
     @DeleteMapping("/posts/{id}")
     public PostBasicInfoDTO delete(@PathVariable int id, HttpSession s){
         return postService.delete(id,getLoggedId(s));
