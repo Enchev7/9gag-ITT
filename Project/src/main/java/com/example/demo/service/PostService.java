@@ -20,10 +20,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 @Service
@@ -115,6 +117,38 @@ public class PostService extends AbstractService{
         return postsDTOs;
     }
 
+    public List<PostBasicInfoDTO> getTrending() {
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0)));
+        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+
+        for (Post p:posts){
+            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
+        }
+        return postsDTOs;
+    }
+
+    public List<PostBasicInfoDTO> getFresh() {
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN)));
+        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+
+        for (Post p:posts){
+            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
+        }
+        return postsDTOs;
+    }
+    public List<PostBasicInfoDTO> getTop() {
+        List<Post> posts = new ArrayList<>();
+        posts.addAll(postRepository.sortedByTop());
+        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+
+        for (Post p:posts){
+            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
+        }
+        return postsDTOs;
+    }
+    
     public PostBasicInfoDTO delete(int id, int userId){
 
         Optional<Post> optionalPost = postRepository.findById(id);

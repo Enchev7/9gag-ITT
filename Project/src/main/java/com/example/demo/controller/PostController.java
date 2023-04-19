@@ -44,6 +44,16 @@ public class PostController extends AbstractController{
     public List<PostBasicInfoDTO> fresh(){
         return postService.fresh();
     }
+    @GetMapping("/posts/trending")
+    public List<PostBasicInfoDTO> trending(){
+        return postService.getTrending();
+    }
+
+    @GetMapping("/posts/top")
+    public List<PostBasicInfoDTO> top(){
+        return postService.getTop();
+    }
+    
     @DeleteMapping("/posts/{id}")
     public PostBasicInfoDTO delete(@PathVariable int id, HttpSession s){
         return postService.delete(id,getLoggedId(s));
