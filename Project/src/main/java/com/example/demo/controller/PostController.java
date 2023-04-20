@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,17 +42,21 @@ public class PostController extends AbstractController{
         return postService.search(query);
     }
     @GetMapping("/posts/fresh")
-    public List<PostBasicInfoDTO> fresh(){
-        return postService.fresh();
+    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "9") int size){
+        return postService.fresh(page, size);
     }
+
     @GetMapping("/posts/trending")
-    public List<PostBasicInfoDTO> trending(){
-        return postService.getTrending();
+    public Page<PostBasicInfoDTO> trending(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "9") int size) {
+        return postService.getTrending(page, size);
     }
 
     @GetMapping("/posts/top")
-    public List<PostBasicInfoDTO> top(){
-        return postService.getTop();
+    public Page<PostBasicInfoDTO> top(@RequestParam(defaultValue = "0") int page,
+                                      @RequestParam(defaultValue = "9") int size){
+        return postService.getTop(page, size);
     }
     
     

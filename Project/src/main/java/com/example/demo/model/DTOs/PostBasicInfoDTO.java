@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class PostBasicInfoDTO {
 
-    private int id;
+    private Integer id;
     private String title;
     private String filePath;
     private LocalDateTime createdAt;

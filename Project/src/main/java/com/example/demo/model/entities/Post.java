@@ -14,7 +14,7 @@ public class Post {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Column
     private String title;
     @Column(name = "file_path")

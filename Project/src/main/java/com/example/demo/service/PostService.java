@@ -11,12 +11,18 @@ import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.PostReactionRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -41,7 +47,7 @@ public class PostService extends AbstractService{
     private PostReactionRepository postReactionRepository;
     @Autowired
     private UserRepository userRepository;
-    
+    @Transactional
     public PostBasicInfoDTO create(String title, MultipartFile file, String[] tags, Integer userId){
         if(title == null || title.length() == 0 || title.length() > 280) {
             throw new BadRequestException("Title should be a string up to 280 symbols");
@@ -106,36 +112,29 @@ public class PostService extends AbstractService{
         return postsDTOs;
     }
 
-    public List<PostBasicInfoDTO> getTrending() {
-        List<Post> posts = new ArrayList<>();
-        posts.addAll(postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0)));
-        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
-
-        for (Post p:posts){
-            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
-        }
-        return postsDTOs;
+    public Page<PostBasicInfoDTO> getTrending(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0), pageable);
+        return posts.map(p -> mapper.map(p, PostBasicInfoDTO.class));
     }
 
-    public List<PostBasicInfoDTO> fresh() {
-        List<Post> posts = new ArrayList<>();
-        posts.addAll(postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN)));
-        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
+    /* 
+    By default, if we do not pass parameters in the HTTP Request it shows all the results in one page.
+    Using "?page=2&size=9" means that it will return the second page and 9 results for each page.
+     */
+    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page,
+                                        @RequestParam(defaultValue = "9") int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Post> posts = postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN), pageable);
 
-        for (Post p:posts){
-            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
-        }
-        return postsDTOs;
+        return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
-    public List<PostBasicInfoDTO> getTop() {
-        List<Post> posts = new ArrayList<>();
-        posts.addAll(postRepository.sortedByTop());
-        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
 
-        for (Post p:posts){
-            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
-        }
-        return postsDTOs;
+    public Page<PostBasicInfoDTO> getTop(@RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "9") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> posts = postRepository.sortedByTop(pageable);
+        return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
     
     public PostBasicInfoDTO delete(int id, int userId){
