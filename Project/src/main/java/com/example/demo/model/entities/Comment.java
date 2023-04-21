@@ -35,7 +35,10 @@ public class Comment {
     private LocalDateTime createdAt;
     @Column
     private String content;
-
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private Set<Comment> replies = new HashSet<>();
+    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+    private Set<CommentReaction> commentReactions = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

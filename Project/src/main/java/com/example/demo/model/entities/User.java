@@ -38,6 +38,8 @@ public class User {
     private boolean isAdmin;
     @Column(name = "is_banned")
     private boolean isBanned;
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+//    private Set<Post> posts = new HashSet<>();
     @ManyToMany(mappedBy = "reportedBy", cascade = CascadeType.ALL)
     private Set<Post> reportedPosts = new HashSet<>();
 

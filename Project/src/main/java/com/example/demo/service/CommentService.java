@@ -40,11 +40,14 @@ public class CommentService extends AbstractService{
     public CommentDTO create(int postId, MultipartFile file,String content,String parentId,int userId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
 
-        if (!optionalPost.isPresent()){
+        if (optionalPost.isEmpty()){
             throw new NotFoundException("The post you try to comment on is missing.");
         }
         if (content.length()>500){
             throw new BadRequestException("Can't exceed 500 chars limit.");
+        }
+        if (content.isEmpty() && file.isEmpty()){
+            throw new BadRequestException("Can't create a comment without any content.");
         }
         boolean hasParent = !parentId.equals("");
         Optional<Comment> optionalComment = null;
@@ -52,7 +55,7 @@ public class CommentService extends AbstractService{
         if (hasParent){
             optionalComment=commentRepository.findById(Integer.parseInt(parentId));
 
-            if (!optionalComment.isPresent()){
+            if (optionalComment.isEmpty()){
                 throw new NotFoundException("The comment you try to reply to is missing.");
             }
             if (commentRepository.findByIdAndPostId(Integer.parseInt(parentId),postId).isEmpty()){
@@ -132,7 +135,7 @@ public class CommentService extends AbstractService{
 
     public List<CommentDTO> viewComments(int postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
-        if (!optionalPost.isPresent()){
+        if (optionalPost.isEmpty()){
             throw new NotFoundException("Post not found.");
         }
         List<Comment> comments = commentRepository.findAllByPostId(postId);

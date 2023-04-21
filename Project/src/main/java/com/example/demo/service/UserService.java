@@ -75,7 +75,7 @@ public class UserService {
     public UserWithoutPassDTO login(LoginDTO dto) {
         Optional<User> opt = userRepository.getByEmail(dto.getEmail());
 
-        if (!opt.isPresent()){
+        if (opt.isEmpty()){
             throw new UnauthorizedException("Wrong credentials");
         }
         if(!passwordEncoder.matches(dto.getPassword(), opt.get().getPassword())){
@@ -117,7 +117,7 @@ public class UserService {
         message.setText("Click the following link to verify your account: http://localhost:7373/users/verify?code=" + code);
         mailSender.send(message);
     }
-    @Scheduled(fixedRate = 900000)
+    @Scheduled(fixedRate = 60000)
     public void deleteUnverifiedUsers() {
         long thresholdInSeconds = 900;
         LocalDateTime thresholdTime = LocalDateTime.now().minusSeconds(thresholdInSeconds);
