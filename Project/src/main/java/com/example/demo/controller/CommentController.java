@@ -37,7 +37,7 @@ public class CommentController extends AbstractController{
         return commentService.react(id,getLoggedId(s),false);
     }
     @GetMapping("/posts/{postId}/comments/view")
-    public List<CommentWithoutPostAndParentDTO> viewComments(@PathVariable int postId){
-        return commentService.viewComments(postId);
+    public List<CommentWithoutPostAndParentDTO> viewComments(@PathVariable int postId, @RequestParam(defaultValue = "0") int page){
+        return commentService.viewComments(postId, page);
     }
 }

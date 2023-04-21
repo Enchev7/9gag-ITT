@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.util.UUID;
 
 public abstract class AbstractService {
-    
+    protected int pageSize = 9;
     protected String saveFile(MultipartFile file){
         try {
             String ext = FilenameUtils.getExtension(file.getOriginalFilename());

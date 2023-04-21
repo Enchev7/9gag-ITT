@@ -45,7 +45,6 @@ public class PostService extends AbstractService{
     @Autowired
     private UserRepository userRepository;
     
-    private int pageSize = 9;
     @Transactional
     public PostBasicInfoDTO create(String title, MultipartFile file, String[] tags, Integer userId){
         if(title == null || title.length() == 0 || title.length() > 280) {

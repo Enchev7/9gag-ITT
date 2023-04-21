@@ -15,7 +15,12 @@ import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -136,15 +141,26 @@ public class CommentService extends AbstractService{
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
 
-    public List<CommentWithoutPostAndParentDTO> viewComments(int postId) {
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if (optionalPost.isEmpty()){
-            throw new NotFoundException("Post not found.");
-        }
-        List<Comment> comments = commentRepository.findAllByPostId(postId);
-        List<CommentWithoutPostAndParentDTO> commentDTOS=new ArrayList<>();
-        for (Comment c:comments){
-            commentDTOS.add(mapper.map(c,CommentWithoutPostAndParentDTO.class));
+//    public List<CommentWithoutPostAndParentDTO> viewComments(int postId, @RequestParam(defaultValue = "0") int page) {
+//        Optional<Post> optionalPost = postRepository.findById(postId);
+//        if (optionalPost.isEmpty()){
+//            throw new NotFoundException("Post not found.");
+//        }
+//        List<Comment> comments = commentRepository.findAllByPostId(postId);
+//        List<CommentWithoutPostAndParentDTO> commentDTOS=new ArrayList<>();
+//        for (Comment c:comments){
+//            commentDTOS.add(mapper.map(c,CommentWithoutPostAndParentDTO.class));
+//        }
+//        return commentDTOS;
+//    }
+
+    public List<CommentWithoutPostAndParentDTO> viewComments(int postId, int page) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post not found."));
+        Pageable pageable = PageRequest.of(page, pageSize);
+        List<Comment> comments = commentRepository.findAllByPostId(postId, pageable).getContent();
+        List<CommentWithoutPostAndParentDTO> commentDTOS = new ArrayList<>();
+        for (Comment c: comments){
+            commentDTOS.add(mapper.map(c, CommentWithoutPostAndParentDTO.class));
         }
         return commentDTOS;
     }
