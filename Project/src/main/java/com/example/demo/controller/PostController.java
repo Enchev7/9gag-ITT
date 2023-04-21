@@ -39,27 +39,23 @@ public class PostController extends AbstractController{
     }
     
     @GetMapping("/posts/search")
-    public Page<PostBasicInfoDTO> search(@RequestParam("query") String query, @RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "9") int size){
-        return postService.search(page, size, query);
+    public Page<PostBasicInfoDTO> search(@RequestParam("query") String query, @RequestParam(defaultValue = "0") int page){
+        return postService.search(page, query);
     }
     
     @GetMapping("/posts/fresh")
-    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "9") int size){
-        return postService.fresh(page, size);
+    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page){
+        return postService.fresh(page);
     }
 
     @GetMapping("/posts/trending")
-    public Page<PostBasicInfoDTO> trending(@RequestParam(defaultValue = "0") int page,
-                                           @RequestParam(defaultValue = "9") int size) {
-        return postService.getTrending(page, size);
+    public Page<PostBasicInfoDTO> trending(@RequestParam(defaultValue = "0") int page) {
+        return postService.getTrending(page);
     }
 
     @GetMapping("/posts/top")
-    public Page<PostBasicInfoDTO> top(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "9") int size){
-        return postService.getTop(page, size);
+    public Page<PostBasicInfoDTO> top(@RequestParam(defaultValue = "0") int page){
+        return postService.getTop(page);
     }
     
     

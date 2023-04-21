@@ -44,6 +44,8 @@ public class PostService extends AbstractService{
     private PostReactionRepository postReactionRepository;
     @Autowired
     private UserRepository userRepository;
+    
+    private int pageSize = 9;
     @Transactional
     public PostBasicInfoDTO create(String title, MultipartFile file, String[] tags, Integer userId){
         if(title == null || title.length() == 0 || title.length() > 280) {
@@ -103,18 +105,18 @@ public class PostService extends AbstractService{
     By default, if we do not pass parameters in the HTTP Request it shows all the results in one page.
     Using "?page=2&size=9" means that it will return the second page and 9 results for each page.
      */
-    public Page<PostBasicInfoDTO> search(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "9") int size, String query) {
+    public Page<PostBasicInfoDTO> search(@RequestParam(defaultValue = "0") int page, String query) {
         Set<Post> posts = new HashSet<>();
         posts.addAll(postRepository.findByTitleContainingIgnoreCase(query));
         posts.addAll(postRepository.findByTagNameContainingIgnoreCase("%" + query + "%"));
         List<Post> postList = new ArrayList<>(posts);
-        int start = page * size;
-        int end = Math.min(start + size, postList.size());
-        Page<Post> postPage = new PageImpl<>(postList.subList(start, end), PageRequest.of(page, size), postList.size());
+        int start = page * pageSize;
+        int end = Math.min(start + pageSize, postList.size());
+        Page<Post> postPage = new PageImpl<>(postList.subList(start, end), PageRequest.of(page, pageSize), postList.size());
         return postPage.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
     
-    public Page<PostBasicInfoDTO> getTrending(int pageNumber, int pageSize) {
+    public Page<PostBasicInfoDTO> getTrending(int pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0), pageable);
         return posts.map(p -> mapper.map(p, PostBasicInfoDTO.class));
@@ -122,19 +124,18 @@ public class PostService extends AbstractService{
 
     /* 
     By default, if we do not pass parameters in the HTTP Request it shows all the results in one page.
-    Using "?page=2&size=9" means that it will return the second page and 9 results for each page.
+    Using "?page=1" means that it will return the second page and 9 results for each page. The page size depends on 
+    the variable pageSize.
      */
-    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page,
-                                        @RequestParam(defaultValue = "9") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN), pageable);
 
         return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
 
-    public Page<PostBasicInfoDTO> getTop(@RequestParam(defaultValue = "0") int page,
-                                         @RequestParam(defaultValue = "9") int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<PostBasicInfoDTO> getTop(@RequestParam(defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, pageSize);
         Page<Post> posts = postRepository.sortedByTop(pageable);
         return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
