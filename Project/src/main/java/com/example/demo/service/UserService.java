@@ -118,14 +118,13 @@ public class UserService {
         mailSender.send(message);
     }
     @Scheduled(fixedRate = 900000)
-    public void deleteVerificationCodesForUnverifiedUsers() {
+    public void deleteUnverifiedUsers() {
         long thresholdInSeconds = 900;
         LocalDateTime thresholdTime = LocalDateTime.now().minusSeconds(thresholdInSeconds);
-
         List<User> unverifiedUsers = userRepository.findUnverifiedUsersRegisteredBefore(thresholdTime);
-
         userRepository.deleteAll(unverifiedUsers);
     }
+
 
 
 

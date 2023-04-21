@@ -64,18 +64,21 @@ public class PostService extends AbstractService{
         
         String url = saveFile(file);
         post.setFilePath(url);
-        for (String tag : tags) {
-            post.getPostTags().add(tagService.findOrCreateTagByName(tag));
+        for (String tagName : tags) {
+            Tag tag = tagService.findOrCreateTagByName(tagName);
+            tag.getPostTags().add(post);
+            post.getPostTags().add(tag);
         }
         postRepository.save(post);
         return mapper.map(post, PostBasicInfoDTO.class);
     }
     public PostReactionDTO react(int id, int userId,boolean reaction){
+
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isEmpty()){
             throw new NotFoundException("The post you are trying to react to is missing.");
         }
-        Optional<PostReaction> optionalPostReaction = postReactionRepository.findByIdPostIdAndIdUserId(id,userId);
+        Optional<PostReaction> optionalPostReaction = postReactionRepository.findByPostIdAndUserId(id,userId);
 
         PostReaction postReaction;
         if (optionalPostReaction.isPresent()){
@@ -149,7 +152,10 @@ public class PostService extends AbstractService{
             throw new UnauthorizedException("Can't delete a post you haven't created yourself!");
         }
         try {
-            Files.delete(Path.of(optionalPost.get().getFilePath()));
+            String filePath = optionalPost.get().getFilePath();
+            if (filePath != null && Files.exists(Path.of(filePath))){
+                Files.delete(Path.of(optionalPost.get().getFilePath()));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -187,8 +193,8 @@ public class PostService extends AbstractService{
             }
         }
         post.getReportedBy().add(optionalUser.get());
-        optionalUser.get().getReportedPosts().add(post);
         post.setReports(post.getReports()+1);
+        optionalUser.get().getReportedPosts().add(post);
         postRepository.save(post);
         return mapper.map(post,PostBasicInfoDTO.class);
     }

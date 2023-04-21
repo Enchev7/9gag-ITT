@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface PostReactionRepository extends JpaRepository<PostReaction, PostReaction.PostReactionId> {
 
-    Optional<PostReaction> findByIdPostIdAndIdUserId(Integer postId, Integer userId);
+    Optional<PostReaction> findByPostIdAndUserId(Integer postId, Integer userId);
 
 }
 

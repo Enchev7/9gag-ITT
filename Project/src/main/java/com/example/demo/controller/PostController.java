@@ -80,4 +80,6 @@ public class PostController extends AbstractController{
     public PostBasicInfoDTO report(@PathVariable int id,HttpSession s){
         return postService.report(id,getLoggedId(s));
     }
+
+
 }

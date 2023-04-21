@@ -1,6 +1,5 @@
 package com.example.demo.model.repositories;
 
-import com.example.demo.model.DTOs.PostBasicInfoDTO;
 import com.example.demo.model.entities.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<Post> findByTitleContainingIgnoreCase(String title);
     @Query("SELECT p FROM posts p JOIN p.postTags t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%'))")
     List<Post> findByTagNameContainingIgnoreCase(String searchString);
-    List<Post> findAllByOrderByCreatedAtDesc();
     
 
     @Query("SELECT p FROM posts p " +

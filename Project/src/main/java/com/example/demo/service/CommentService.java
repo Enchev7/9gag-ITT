@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,16 +60,21 @@ public class CommentService extends AbstractService{
             }
         }
         User user = userRepository.findById(userId).get();
-        String url = saveFile(file);
+
+        String url = null;
+        if (!file.isEmpty()){
+            url = saveFile(file);
+        }
         Comment comment = new Comment();
         comment.setCreatedAt(LocalDateTime.now());
         comment.setContent(content);
-        if (hasParent){
-            comment.setParent(optionalComment.get());
-        }
         comment.setPost(optionalPost.get());
         comment.setOwner(user);
         comment.setFilePath(url);
+        if (hasParent){
+            comment.setParent(optionalComment.get());
+        }
+        optionalPost.get().getComments().add(comment);
         commentRepository.save(comment);
         return mapper.map(comment,CommentDTO.class);
     }
@@ -83,7 +90,10 @@ public class CommentService extends AbstractService{
             throw new UnauthorizedException("Can't delete a comment you haven't created yourself!");
         }
         try {
-            Files.delete(Path.of(optionalComment.get().getFilePath()));
+            String filePath = optionalComment.get().getFilePath();
+            if (filePath != null && Files.exists(Path.of(filePath))){
+                Files.delete(Path.of(optionalComment.get().getFilePath()));
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,11 +101,12 @@ public class CommentService extends AbstractService{
         return mapper.map(optionalComment.get(),CommentDTO.class);
     }
     public CommentReactionDTO react(int id, int userId,boolean reaction){
+
         Optional<Comment> optionalComment = commentRepository.findById(id);
         if (optionalComment.isEmpty()){
             throw new NotFoundException("The comment you are trying to react to is missing.");
         }
-        Optional<CommentReaction> optionalCommentReaction = commentReactionRepository.findByIdCommentIdAndIdUserId(id,userId);
+        Optional<CommentReaction> optionalCommentReaction = commentReactionRepository.findByCommentIdAndUserId(id,userId);
 
         CommentReaction commentReaction;
         if (optionalCommentReaction.isPresent()){
@@ -119,4 +130,16 @@ public class CommentService extends AbstractService{
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
 
+    public List<CommentDTO> viewComments(int postId) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (!optionalPost.isPresent()){
+            throw new NotFoundException("Post not found.");
+        }
+        List<Comment> comments = commentRepository.findAllByPostId(postId);
+        List<CommentDTO> commentDTOS=new ArrayList<>();
+        for (Comment c:comments){
+            commentDTOS.add(mapper.map(c,CommentDTO.class));
+        }
+        return commentDTOS;
+    }
 }

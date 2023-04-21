@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CommentReactionRepository extends JpaRepository<CommentReaction, CommentReaction.CommentReactionId> {
 
-    Optional<CommentReaction> findByIdCommentIdAndIdUserId(Integer commentId, Integer userId);
+    Optional<CommentReaction> findByCommentIdAndUserId(Integer commentId, Integer userId);
 
 
 }

@@ -6,9 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +18,6 @@ public class CommentDTO {
     private UserWithoutPassDTO owner;
     private PostBasicInfoDTO post;
     private CommentBasicInfoDTO parent;
-    private Set<CommentReactionDTO> reactions=new HashSet<>();
     private String filePath;
     private LocalDateTime createdAt;
     private String content;
