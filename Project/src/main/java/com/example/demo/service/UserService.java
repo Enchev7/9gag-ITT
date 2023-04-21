@@ -8,6 +8,8 @@ import com.example.demo.model.exceptions.BadRequestException;
 import com.example.demo.model.exceptions.NotFoundException;
 import com.example.demo.model.exceptions.UnauthorizedException;
 import com.example.demo.model.repositories.UserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -31,7 +33,7 @@ public class UserService {
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private JavaMailSender mailSender;
-
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
 
     public UserWithoutPassDTO register(UserRegisterDataDTO registerData){
@@ -55,7 +57,9 @@ public class UserService {
         u.setRegisteredAt(LocalDateTime.now());
         u.setPassword(passwordEncoder.encode(u.getPassword()));
         u.setVerCode(verCode);
+        logger.info("User with id "+u.getId()+" has just registered.");
         userRepository.save(u);
+
         new Thread(() -> sendVerificationCode(registerData.getEmail(),verCode)).start();
         return mapper.map(u,UserWithoutPassDTO.class);
     }
@@ -89,6 +93,7 @@ public class UserService {
         }
         User u = opt.get();
         u.setLastLoginTime(LocalDateTime.now());
+        logger.info("User with id "+u.getId()+" has just logged in.");
         userRepository.save(u);
         return mapper.map(u, UserWithoutPassDTO.class);
     }

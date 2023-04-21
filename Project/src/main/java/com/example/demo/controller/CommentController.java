@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.DTOs.CommentDTO;
 import com.example.demo.model.DTOs.CommentReactionDTO;
+import com.example.demo.model.DTOs.CommentWithoutPostAndParentDTO;
 import com.example.demo.service.CommentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class CommentController extends AbstractController{
         return commentService.react(id,getLoggedId(s),false);
     }
     @GetMapping("/posts/{postId}/comments/view")
-    public List<CommentDTO> viewComments(@PathVariable int postId){
+    public List<CommentWithoutPostAndParentDTO> viewComments(@PathVariable int postId){
         return commentService.viewComments(postId);
     }
 }

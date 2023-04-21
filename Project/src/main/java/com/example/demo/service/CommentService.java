@@ -1,8 +1,10 @@
 package com.example.demo.service;
 
 
+
 import com.example.demo.model.DTOs.CommentDTO;
 import com.example.demo.model.DTOs.CommentReactionDTO;
+import com.example.demo.model.DTOs.CommentWithoutPostAndParentDTO;
 import com.example.demo.model.entities.*;
 import com.example.demo.model.exceptions.BadRequestException;
 import com.example.demo.model.exceptions.NotFoundException;
@@ -36,6 +38,7 @@ public class CommentService extends AbstractService{
     private UserRepository userRepository;
     @Autowired
     private ModelMapper mapper;
+
 
     public CommentDTO create(int postId, MultipartFile file,String content,String parentId,int userId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
@@ -133,15 +136,15 @@ public class CommentService extends AbstractService{
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
 
-    public List<CommentDTO> viewComments(int postId) {
+    public List<CommentWithoutPostAndParentDTO> viewComments(int postId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
         if (optionalPost.isEmpty()){
             throw new NotFoundException("Post not found.");
         }
         List<Comment> comments = commentRepository.findAllByPostId(postId);
-        List<CommentDTO> commentDTOS=new ArrayList<>();
+        List<CommentWithoutPostAndParentDTO> commentDTOS=new ArrayList<>();
         for (Comment c:comments){
-            commentDTOS.add(mapper.map(c,CommentDTO.class));
+            commentDTOS.add(mapper.map(c,CommentWithoutPostAndParentDTO.class));
         }
         return commentDTOS;
     }
