@@ -37,10 +37,13 @@ public class PostController extends AbstractController{
     public PostReactionDTO dislikeUnDislike(@PathVariable int id, HttpSession s){
         return postService.react(id,getLoggedId(s),false);
     }
+    
     @GetMapping("/posts/search")
-    public List<PostBasicInfoDTO> search(@RequestParam("query") String query){
-        return postService.search(query);
+    public Page<PostBasicInfoDTO> search(@RequestParam("query") String query, @RequestParam(defaultValue = "0") int page,
+                                         @RequestParam(defaultValue = "9") int size){
+        return postService.search(page, size, query);
     }
+    
     @GetMapping("/posts/fresh")
     public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "9") int size){

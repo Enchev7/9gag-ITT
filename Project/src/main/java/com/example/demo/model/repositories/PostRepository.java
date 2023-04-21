@@ -15,7 +15,8 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
     List<Post> findByTitleContainingIgnoreCase(String title);
-    @Query("SELECT p FROM posts p JOIN p.postTags t WHERE LOWER(t.name) LIKE LOWER(CONCAT('%', :searchString, '%'))")
+    @Query(value = "SELECT * FROM posts p\n" +
+            "WHERE LOWER (p.title) LIKE lower(?)", nativeQuery = true)  
     List<Post> findByTagNameContainingIgnoreCase(String searchString);
     
 

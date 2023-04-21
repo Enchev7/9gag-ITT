@@ -17,10 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -102,19 +99,21 @@ public class PostService extends AbstractService{
         return mapper.map(postReaction,PostReactionDTO.class);
     }
 
-
-    public List<PostBasicInfoDTO> search(String query){
-        List<Post> posts = new ArrayList<>();
+    /* 
+    By default, if we do not pass parameters in the HTTP Request it shows all the results in one page.
+    Using "?page=2&size=9" means that it will return the second page and 9 results for each page.
+     */
+    public Page<PostBasicInfoDTO> search(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "9") int size, String query) {
+        Set<Post> posts = new HashSet<>();
         posts.addAll(postRepository.findByTitleContainingIgnoreCase(query));
-        posts.addAll(postRepository.findByTagNameContainingIgnoreCase(query));
-        List<PostBasicInfoDTO> postsDTOs = new ArrayList<>();
-
-        for (Post p:posts){
-            postsDTOs.add(mapper.map(p, PostBasicInfoDTO.class));
-        }
-        return postsDTOs;
+        posts.addAll(postRepository.findByTagNameContainingIgnoreCase("%" + query + "%"));
+        List<Post> postList = new ArrayList<>(posts);
+        int start = page * size;
+        int end = Math.min(start + size, postList.size());
+        Page<Post> postPage = new PageImpl<>(postList.subList(start, end), PageRequest.of(page, size), postList.size());
+        return postPage.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
-
+    
     public Page<PostBasicInfoDTO> getTrending(int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0), pageable);
