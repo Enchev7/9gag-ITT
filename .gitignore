@@ -61,3 +61,5 @@ mvnw
 mvnw.cmd
 .mvn
 /Project/uploads/
+/Project/appLog
+logs/
