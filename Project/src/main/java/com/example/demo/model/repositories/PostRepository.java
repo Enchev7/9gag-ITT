@@ -18,23 +18,26 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "SELECT * FROM posts p\n" +
             "WHERE LOWER (p.title) LIKE lower(?)", nativeQuery = true)  
     List<Post> findByTagNameContainingIgnoreCase(String searchString);
-    
 
-    @Query("SELECT p FROM posts p " +
-       "JOIN p.comments c " +
-       "JOIN p.postReactions pr " + 
-       "WHERE p.createdAt >= :date " +
-       "GROUP BY p.id " +
-       "ORDER BY COUNT(c.id) DESC, COUNT(pr.post.id) DESC")
-    Page<Post> sortedByTrending(@Param("date") LocalDateTime date, Pageable pageable);
 
-    @Query("SELECT p FROM posts p " +
-            "JOIN p.comments c " +
-            "JOIN p.postReactions pr " +
-            "GROUP BY p.id " +
-            "ORDER BY COUNT(c.id) DESC, COUNT(pr.post.id) DESC")
+    @Query(value = "SELECT p.id, p.title, p.content, p.created_at, p.reports " +
+            "(SELECT COUNT(c.id) FROM comments c WHERE c.post_id = p.id) + " +
+            "(SELECT COUNT(pr.post_id) FROM post_reactions pr WHERE pr.post_id = p.id AND pr.is_liked = 1) AS total_count " +
+            "FROM posts p WHERE p.created_at >= DATE_SUB(NOW(), INTERVAL 9 DAY) ORDER BY total_count DESC ",
+            countQuery = "SELECT COUNT(*) FROM posts WHERE created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)",
+            nativeQuery = true)
+    Page<Post> sortedByTrending(Pageable pageable);
+
+
+    @Query(value = "SELECT p.id, p.title, p.file_path, p.user_id, p.created_at, p.reports, " +
+            "(SELECT COUNT(c.id) FROM comments c WHERE c.post_id = p.id) + " +
+            "(SELECT COUNT(pr.post_id) FROM post_reactions pr WHERE pr.post_id = p.id AND pr.is_liked = 1) AS total_count " +
+            "FROM posts p ORDER BY total_count DESC", countQuery = "SELECT COUNT(*) FROM posts", nativeQuery = true)
     Page<Post> sortedByTop(Pageable pageable);
-    
+
     @Query("SELECT p FROM posts p WHERE p.createdAt >= :startOfDay")
     Page<Post> fresh(@Param("startOfDay") LocalDateTime startOfDay, Pageable pageable);
+
+
+
 }

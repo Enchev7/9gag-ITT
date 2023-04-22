@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -121,8 +120,8 @@ public class PostService extends AbstractService{
     }
     
     public Page<PostBasicInfoDTO> getTrending(int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("createdAt").descending());
-        Page<Post> posts = postRepository.sortedByTrending(LocalDate.now().minusDays(10).atStartOfDay().withHour(0).withMinute(0).withSecond(0), pageable);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> posts = postRepository.sortedByTrending(pageable);
         return posts.map(p -> mapper.map(p, PostBasicInfoDTO.class));
     }
 
