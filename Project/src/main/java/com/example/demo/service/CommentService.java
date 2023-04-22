@@ -13,14 +13,13 @@ import com.example.demo.model.repositories.CommentReactionRepository;
 import com.example.demo.model.repositories.CommentRepository;
 import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,7 +42,7 @@ public class CommentService extends AbstractService{
     private UserRepository userRepository;
     @Autowired
     private ModelMapper mapper;
-
+    private static final Logger logger = LogManager.getLogger(CommentService.class);
 
     public CommentDTO create(int postId, MultipartFile file,String content,String parentId,int userId) {
         Optional<Post> optionalPost = postRepository.findById(postId);
@@ -87,6 +86,7 @@ public class CommentService extends AbstractService{
         }
         optionalPost.get().getComments().add(comment);
         commentRepository.save(comment);
+        logger.info("User with id "+userId+" has created a comment with id "+comment.getId()+" on a post with id "+postId);
         return mapper.map(comment,CommentDTO.class);
     }
     public CommentDTO delete(int id,int userId){
@@ -108,6 +108,7 @@ public class CommentService extends AbstractService{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        logger.info("User with id "+userId+" has deleted comment with id "+id);
         commentRepository.delete(optionalComment.get());
         return mapper.map(optionalComment.get(),CommentDTO.class);
     }
@@ -124,6 +125,7 @@ public class CommentService extends AbstractService{
             commentReaction=optionalCommentReaction.get();
             if (commentReaction.isLiked() == reaction){
                 commentReactionRepository.delete(commentReaction);
+                logger.info("User with id "+userId+" removed his/her reaction from comment with id "+id);
             }
             else {
                 commentReaction.setLiked(reaction);
@@ -138,21 +140,9 @@ public class CommentService extends AbstractService{
             commentReaction.setLiked(reaction);
             commentReactionRepository.save(commentReaction);
         }
+        logger.info("User with id "+userId+" reacted with "+reaction+" to comment with id "+id);
         return mapper.map(commentReaction,CommentReactionDTO.class);
     }
-
-//    public List<CommentWithoutPostAndParentDTO> viewComments(int postId, @RequestParam(defaultValue = "0") int page) {
-//        Optional<Post> optionalPost = postRepository.findById(postId);
-//        if (optionalPost.isEmpty()){
-//            throw new NotFoundException("Post not found.");
-//        }
-//        List<Comment> comments = commentRepository.findAllByPostId(postId);
-//        List<CommentWithoutPostAndParentDTO> commentDTOS=new ArrayList<>();
-//        for (Comment c:comments){
-//            commentDTOS.add(mapper.map(c,CommentWithoutPostAndParentDTO.class));
-//        }
-//        return commentDTOS;
-//    }
 
     public List<CommentWithoutPostAndParentDTO> viewComments(int postId, int page) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post not found."));

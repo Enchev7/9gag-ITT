@@ -110,6 +110,7 @@ public class UserService {
             throw new UnauthorizedException("No permission!");
         }
         bannableUser.get().setBanned(!bannableUser.get().isBanned());
+        logger.info("User with id "+bannableUser.get().getId()+" has been banned/unbanned from admin with id "+sessionId);
         userRepository.save(bannableUser.get());
         return mapper.map(bannableUser.get(),UserWithoutPassDTO.class);
     }

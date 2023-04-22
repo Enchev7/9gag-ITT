@@ -13,13 +13,14 @@ import com.example.demo.model.repositories.PostRepository;
 import com.example.demo.model.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -44,6 +45,7 @@ public class PostService extends AbstractService{
     private PostReactionRepository postReactionRepository;
     @Autowired
     private UserRepository userRepository;
+    private static final Logger logger = LogManager.getLogger(PostService.class);
     
     @Transactional
     public PostBasicInfoDTO create(String title, MultipartFile file, String[] tags, Integer userId){
@@ -68,6 +70,7 @@ public class PostService extends AbstractService{
             post.getPostTags().add(tag);
         }
         postRepository.save(post);
+        logger.info("Post with id "+post.getId()+" has been created by user with id "+userId);
         return mapper.map(post, PostBasicInfoDTO.class);
     }
     public PostReactionDTO react(int id, int userId,boolean reaction){
@@ -83,6 +86,7 @@ public class PostService extends AbstractService{
             postReaction=optionalPostReaction.get();
             if (postReaction.isLiked() == reaction){
                 postReactionRepository.delete(postReaction);
+                logger.info("User with id "+userId+" removed his/her reaction from post with id "+id);
             }
             else{
                 postReaction.setLiked(reaction);
@@ -97,6 +101,7 @@ public class PostService extends AbstractService{
             postReaction.setLiked(reaction);
             postReactionRepository.save(postReaction);
         }
+        logger.info("User with id "+userId+" reacted with "+reaction+" to post with id "+id);
         return mapper.map(postReaction,PostReactionDTO.class);
     }
 
@@ -104,7 +109,7 @@ public class PostService extends AbstractService{
     By default, if we do not pass parameters in the HTTP Request it shows all the results in one page.
     Using "?page=2&size=9" means that it will return the second page and 9 results for each page.
      */
-    public Page<PostBasicInfoDTO> search(@RequestParam(defaultValue = "0") int page, String query) {
+    public Page<PostBasicInfoDTO> search(int page, String query) {
         Set<Post> posts = new HashSet<>();
         posts.addAll(postRepository.findByTitleContainingIgnoreCase(query));
         posts.addAll(postRepository.findByTagNameContainingIgnoreCase("%" + query + "%"));
@@ -126,14 +131,14 @@ public class PostService extends AbstractService{
     Using "?page=1" means that it will return the second page and 9 results for each page. The page size depends on 
     the variable pageSize.
      */
-    public Page<PostBasicInfoDTO> fresh(@RequestParam(defaultValue = "0") int page) {
+    public Page<PostBasicInfoDTO> fresh(int page) {
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by("createdAt").descending());
         Page<Post> posts = postRepository.fresh(LocalDateTime.now().with(LocalTime.MIN), pageable);
 
         return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
     }
 
-    public Page<PostBasicInfoDTO> getTop(@RequestParam(defaultValue = "0") int page) {
+    public Page<PostBasicInfoDTO> getTop(int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Post> posts = postRepository.sortedByTop(pageable);
         return posts.map(post -> mapper.map(post, PostBasicInfoDTO.class));
@@ -158,6 +163,7 @@ public class PostService extends AbstractService{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        logger.info("User with id "+userId+" has deleted post with id "+id);
         postRepository.delete(optionalPost.get());
         return mapper.map(optionalPost.get(),PostBasicInfoDTO.class);
     }
@@ -194,6 +200,7 @@ public class PostService extends AbstractService{
         post.getReportedBy().add(optionalUser.get());
         post.setReports(post.getReports()+1);
         optionalUser.get().getReportedPosts().add(post);
+        logger.info("User with id "+userId+" has reported post with id "+postId);
         postRepository.save(post);
         return mapper.map(post,PostBasicInfoDTO.class);
     }
