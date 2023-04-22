@@ -114,6 +114,9 @@ public class PostService extends AbstractService{
         posts.addAll(postRepository.findByTagNameContainingIgnoreCase("%" + query + "%"));
         List<Post> postList = new ArrayList<>(posts);
         int start = page * pageSize;
+        if (start >= postList.size() || postList.isEmpty()) {
+            return Page.empty();
+        }
         int end = Math.min(start + pageSize, postList.size());
         Page<Post> postPage = new PageImpl<>(postList.subList(start, end), PageRequest.of(page, pageSize), postList.size());
         return postPage.map(post -> mapper.map(post, PostBasicInfoDTO.class));
