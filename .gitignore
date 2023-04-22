@@ -3,6 +3,8 @@
 
 # Log file
 *.log
+/Project/appLog
+*.gz
 
 # BlueJ files
 *.ctxt
@@ -60,6 +62,5 @@ build/
 mvnw
 mvnw.cmd
 .mvn
+
 /Project/uploads/
-/Project/appLog
-logs/
